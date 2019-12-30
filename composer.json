@@ -1,0 +1,15 @@
+{
+  "name":        "infira/utils",
+  "description": "Collection of usefule server,file, date handlers and helpers",
+  "type":        "library",
+  "authors":     [
+	{
+	  "name":  "gen.taliaru",
+	  "email": "gen@infira.ee"
+	}
+  ],
+  "autoload":    {
+	"files": [ "utils/src/__generalUtils.php" ]
+  },
+  "require":     { }
+}
