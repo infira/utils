@@ -9,7 +9,10 @@
 	}
   ],
   "autoload":    {
-	"files": [ "src/__generalUtils.php" ]
+	"files": [ "src/__generalUtils.php" ],
+	"psr-4": {
+	  "PHPMailer\\PHPMailer\\": "src/"
+	}
   },
   "require":     { }
 }
