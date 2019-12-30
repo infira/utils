@@ -9,7 +9,7 @@
 	}
   ],
   "autoload":    {
-	"files": [ "utils/src/__generalUtils.php" ]
+	"files": [ "src/__generalUtils.php" ]
   },
   "require":     { }
 }
