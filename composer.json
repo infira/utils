@@ -11,7 +11,7 @@
   "autoload":    {
 	"files": [ "src/__generalUtils.php" ],
 	"psr-4": {
-	  "PHPMailer\\PHPMailer\\": "src/"
+	  "InfiraUtils\\": "src/"
 	}
   },
   "require":     { }
