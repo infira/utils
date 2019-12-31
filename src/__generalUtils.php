@@ -380,7 +380,7 @@ function defineOrNot($name, $value)
  * @param string $msg
  * @throws Exception
  */
-function alert(string $msg)
+function error(string $msg)
 {
 	throw new Error($msg);
 }
