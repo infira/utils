@@ -2,8 +2,6 @@
 
 namespace InfiraUtils;
 
-use stdClass as stdClass;
-
 /**
  * This class handles date strings
  */
@@ -38,7 +36,7 @@ class Date
 	public static function seconds2human($str)
 	{
 		$time = self::toTime($str);
-		$value = new stdClass();
+		$value = new \stdClass();
 		$value->years = 0;
 		$value->days = 0;
 		$value->hours = 0;

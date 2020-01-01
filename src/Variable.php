@@ -21,7 +21,7 @@ class Variable
 	{
 		if ($toVariable === FALSE or $toVariable == "new" or $toVariable == "empty" or $toVariable == "{}")
 		{
-			$toVariable = new stdClass();
+			$toVariable = new \stdClass();
 		}
 		$returnAsObject = FALSE;
 		if (is_object($toVariable))
@@ -316,7 +316,7 @@ class Variable
 			
 			return $var;
 		}
-		$Return = new stdClass();
+		$Return = new \stdClass();
 		if (is_array($var) and count($var) > 0)
 		{
 			$var = (object)$var;

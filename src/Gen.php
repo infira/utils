@@ -59,7 +59,7 @@ class Gen
 		
 		if ($norepeat && $len > $max + 1)
 		{
-			throw new Exception("Non repetitive random string can't be longer than charset");
+			throw new \Exception("Non repetitive random string can't be longer than charset");
 		}
 		
 		$rand_chars = [];

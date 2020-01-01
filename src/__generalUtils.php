@@ -382,7 +382,7 @@ function defineOrNot($name, $value)
  */
 function error(string $msg)
 {
-	throw new Error($msg);
+	throw new \Error($msg);
 }
 
 /**
@@ -392,5 +392,5 @@ function error(string $msg)
  */
 function exception($msg)
 {
-	throw new Exception($msg);
+	throw new \Exception($msg);
 }
