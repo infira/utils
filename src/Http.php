@@ -12,42 +12,18 @@ class Http
 {
 	private static $mainVar = "route";
 	
-	private static $flags = [];
-	
-	public static function init($mainVar)
+	/**
+	 * Http constructor.
+	 * @param string $mainVar - var name in $_GET what defines the page, defaults to route
+	 * @param callable $getParamsParser - add your own _GET params parser
+	 */
+	public static final function init(string $mainVar = "route", $getParamsParser = FALSE)
 	{
 		self::$mainVar = $mainVar;
-		if (isset($_GET[$mainVar]))
+		if (is_callable($getParamsParser))
 		{
-			$ex = explode(":", $_GET[$mainVar]);
-			$_GET[$mainVar] = trim($ex[0]);
-			if (isset($ex[1]))
-			{
-				$p = str_replace(",", "&", trim($ex[1]));
-				$ex2 = explode("&", $p);
-				if (isset($ex2[0]) AND count($ex2) == 1)
-				{
-					$p = "0=" . $p;
-				}
-				self::$flags = parseStr($p);
-			}
+			$_GET = $getParamsParser($_GET);
 		}
-		if (isset($_GET["ajaxMethodArguments"]))
-		{
-			$_GET["ajaxMethodArguments"] = json_decode($_GET["ajaxMethodArguments"]);
-		}
-		
-		return $_GET;
-	}
-	
-	/**
-	 * Get a flag after : in url, example.com/myPage:flag1,flag2,flag3
-	 * @param int $position - get flag at
-	 * @return mixed
-	 */
-	public static function getFlag(int $position = 0)
-	{
-		return self::$flags[$position];
 	}
 	
 	/**

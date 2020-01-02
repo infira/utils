@@ -24,11 +24,11 @@ class URLBuilder
 	 * Generate url string
 	 *
 	 * @param string|array $urlParams
-	 * @param bool $getNiceUrl - true to reutnr nice url instead of /?id=mainPage&subPage=content you get /mainPage?subPage=content
-	 * @param string|array $flag - add to end of the url sepearated with : for exmplae http://domain.com/mainPage:flag1,flag2?route=mainPage
+	 * @param string|array $aie - add to url if exists in current url, example current url is ?name=gen, self::get(["lastName"=>"series"],"name") outpiuts url ?name=gen&lastName=series
+	 * @param bool $getNiceUrl - true to return nice url instead of /?id=mainPage&subPage=content you get /mainPage?subPage=content
 	 * @return string
 	 */
-	public static function get($urlParams = [], $getNiceUrl = TRUE, $flag = NULL)
+	public static function get($urlParams = [], $aie = [], $getNiceUrl = TRUE)
 	{
 		$tmpID = FALSE;
 		if (checkArray($urlParams))
@@ -61,23 +61,32 @@ class URLBuilder
 			$urlParams[self::$mainVar] = $tmpID;
 		}
 		
-		$link = "";
 		
+		if (is_string($aie))
+		{
+			$aie = Variable::toArray($aie);
+		}
+		if (checkArray($aie))
+		{
+			foreach ($aie as $name)
+			{
+				if (Http::existsGET($name) AND !array_key_exists($name, $urlParams))
+				{
+					$urlParams[$name] = Http::getGET($name);
+				}
+			}
+		}
+		$link = self::$root;
 		
 		if (checkArray($urlParams))
 		{
 			$link .= "?" . http_build_query($urlParams, "&");
 		}
 		
-		$link = self::$root . $link;
 		if ($getNiceUrl AND isset($urlParams[self::$mainVar]))
 		{
 			$mv = $urlParams[self::$mainVar];
 			$mvr = $urlParams[self::$mainVar];
-			if ($flag !== NULL)
-			{
-				$mvr .= ":" . join(",", Variable::toArray($flag));
-			}
 			$q = "";
 			if (count($urlParams) > 1)
 			{
@@ -85,13 +94,6 @@ class URLBuilder
 			}
 			$link = str_replace("?route=$mv", "/$mvr" . $q, $link);
 			$link = str_replace('?&', '?', $link);
-		}
-		else
-		{
-			if ($flag !== NULL)
-			{
-				$link .= ":" . join(",", Variable::toArray($flag));
-			}
 		}
 		
 		return $link;
