@@ -30,8 +30,8 @@ class Variable
 		}
 		
 		$toVariable = self::toArray($toVariable);
-		$values = self::toArray($values);
-		$default = self::toArray($default);
+		$values     = self::toArray($values);
+		$default    = self::toArray($default);
 		
 		if (checkArray($values))
 		{
@@ -81,7 +81,7 @@ class Variable
 	/**
 	 * Assigns string variables to tekst
 	 *
-	 * @param array $vars
+	 * @param array  $vars
 	 * @param string $string
 	 * @return $string
 	 */
@@ -109,7 +109,7 @@ class Variable
 	/**
 	 * Convert variable valut to array
 	 *
-	 * @param mixed $var
+	 * @param mixed  $var
 	 * @param string $caseStringExplodeDelim
 	 *            - if the $var type is string then string is exploded to this param delimiter
 	 * @return array
@@ -125,7 +125,7 @@ class Variable
 			elseif (is_string($var) or is_int($var) or is_numeric($var))
 			{
 				$ex = explode($caseStringExplodeDelim, "$var");
-				$r = [];
+				$r  = [];
 				if (checkArray($ex))
 				{
 					foreach ($ex as $v)
@@ -183,7 +183,7 @@ class Variable
 	
 	public static function toIntArray($var, $recursive = FALSE, $caseStringExplodeDelim = ",")
 	{
-		$arr = self::toArray($var, $recursive, $caseStringExplodeDelim);
+		$arr    = self::toArray($var, $recursive, $caseStringExplodeDelim);
 		$newArr = [];
 		array_walk($arr, function (&$value, $key) use (&$newArr)
 		{
@@ -195,7 +195,7 @@ class Variable
 	
 	public static function toArrayHasValue($var, $recursive = FALSE, $caseStringExplodeDelim = ",")
 	{
-		$arr = self::toArray($var, $recursive, $caseStringExplodeDelim);
+		$arr    = self::toArray($var, $recursive, $caseStringExplodeDelim);
 		$newArr = [];
 		array_walk($arr, function (&$value, $key) use (&$newArr)
 		{
@@ -211,7 +211,7 @@ class Variable
 	/**
 	 * Parse array and add surrounding char to each element
 	 *
-	 * @param array $array
+	 * @param array  $array
 	 * @param string $surrounding
 	 */
 	public static function addSurroundinsToArrayEl($array, $surrounding = "'")
@@ -240,7 +240,7 @@ class Variable
 		elseif (is_string($var) or is_int($var) or is_numeric($var))
 		{
 			$ex = explode($caseStringExplodeDelim, "$var");
-			$r = [];
+			$r  = [];
 			if (checkArray($ex))
 			{
 				foreach ($ex as $v)
@@ -294,7 +294,7 @@ class Variable
 	 * Array to stc class object
 	 *
 	 * @param mixed $var
-	 * @param bool $recursive
+	 * @param bool  $recursive
 	 *            The array("name"=>"gen") result should be Object->name = "gen"
 	 * @return stdClass
 	 */
@@ -331,7 +331,7 @@ class Variable
 	 * Array to array containg std objects
 	 *
 	 * @param mixed $var
-	 * @param bool $recursive
+	 * @param bool  $recursive
 	 *            The array("name"=>"gen") result should be Object->name = "gen"
 	 * @return stdClass
 	 */
@@ -421,38 +421,16 @@ class Variable
 	 */
 	public static function toNumber($val)
 	{
-		$val = trim($val);
-		if (strpos($val, ",") > 0 or strpos($val, ".") > 0)
+		$val = trim((string)$val);
+		$val = str_replace(",", ".", $val);
+		if (strpos($val, ".") > 0)
 		{
-			return str_replace(",", ".", floatval(str_replace(",", ".", $val)));
+			return floatval(str_replace(",", ".", $val));
 		}
 		else
 		{
 			return intval($val);
 		}
-	}
-	
-	/**
-	 * Covnert varibale to number adn replace , with ., for sql queru purpose
-	 *
-	 * @param mixed $val
-	 * @return unknown
-	 */
-	public static function toSqlNumber($val)
-	{
-		return str_replace(",", ".", self::toNumber($val));
-	}
-	
-	public static function flushRoundNumber($val, $round = FALSE)
-	{
-		$val = self::toNumber($val);
-		if ($round)
-		{
-			$val = round($val, $round);
-		}
-		
-		return floatval($val);
-		
 	}
 	
 	public static function roundUpAny($value, $modBase = 5)
@@ -492,7 +470,7 @@ class Variable
 	public static function getDigitals($string)
 	{
 		$matches = Regex::getMatches('/[\\d]/', $string);
-		$r = "";
+		$r       = "";
 		if (checkArray($matches))
 		{
 			foreach ($matches as $digit)
@@ -591,7 +569,7 @@ class Variable
 		// -|_
 		if (Regex::getMatch('/-|_/', $var))
 		{
-			$ex = preg_split('/-|_/', $var);
+			$ex  = preg_split('/-|_/', $var);
 			$var = "";
 			foreach ($ex as $part)
 			{
@@ -639,7 +617,7 @@ class Variable
 	public static function ucFirst($string, $encoding = 'UTF-8')
 	{
 		$firstChar = mb_substr($string, 0, 1, $encoding);
-		$then = mb_substr($string, 1, mb_strlen($string, $encoding) - 1, $encoding);
+		$then      = mb_substr($string, 1, mb_strlen($string, $encoding) - 1, $encoding);
 		
 		return mb_strtoupper($firstChar, $encoding) . $then;
 	}
@@ -748,7 +726,7 @@ class Variable
 		/*
 		 * urlencode function and rawurlencode are mostly based on RFC 1738. However, since 2005 the current RFC in use for URIs standard is RFC 3986. Here is a function to encode URLs according to RFC 3986.
 		 */
-		$entities = ['%21', '%2A', '%27', '%28', '%29', '%3B', '%3A', '%40', '%26', '%3D', '%2B', '%24', '%2C', '%2F', '%3F', '%25', '%23', '%5B', '%5D'];
+		$entities     = ['%21', '%2A', '%27', '%28', '%29', '%3B', '%3A', '%40', '%26', '%3D', '%2B', '%24', '%2C', '%2F', '%3F', '%25', '%23', '%5B', '%5D'];
 		$replacements = ['!', '*', "'", "(", ")", ";", ":", "@", "&", "=", "+", "$", ",", "/", "?", "%", "#", "[", "]"];
 		
 		return str_replace($entities, $replacements, urlencode($string));
@@ -757,7 +735,7 @@ class Variable
 	public static function urlDecode($string)
 	{
 		$replacements = ['%21', '%2A', '%27', '%28', '%29', '%3B', '%3A', '%40', '%26', '%3D', '%2B', '%24', '%2C', '%2F', '%3F', '%25', '%23', '%5B', '%5D'];
-		$entities = ['!', '*', "'", "(", ")", ";", ":", "@", "&", "=", "+", "$", ",", "/", "?", "%", "#", "[", "]"];
+		$entities     = ['!', '*', "'", "(", ")", ";", ":", "@", "&", "=", "+", "$", ",", "/", "?", "%", "#", "[", "]"];
 		
 		return str_replace($entities, $replacements, urlencode($string));
 	}

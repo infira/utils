@@ -3,16 +3,6 @@
 namespace InfiraUtils;
 class Is
 {
-	
-	
-	/*
-	 * Constructor
-	 */
-	function __construct()
-	{
-	}
-	
-	
 	/**
 	 * Deletes file
 	 *
@@ -58,7 +48,7 @@ class Is
 	
 	
 	/**
-	 * Function to check is the given value a numeric
+	 * Is $val float or int
 	 *
 	 * @param mixed $val
 	 * @return bool
@@ -71,10 +61,15 @@ class Is
 		}
 		else
 		{
-			return FALSE;
+			//^\d+?(\.|,)\d+?$
+			if (Regex::isMatch('/^\d+?(\.|,)\d+?$/m', (string)$val))
+			{
+				return TRUE;
+			}
 		}
+		
+		return FALSE;
 	}
-	
 	
 	/**
 	 * Function to check is the given value a date
@@ -139,10 +134,10 @@ class Is
 	
 	/**
 	 * Check if the @param mixed $var
+	 *
 	 * @param string $className
 	 * @return boolean
 	 * @var is instance of class
-	 *
 	 */
 	public static function isClass($var, $className)
 	{
@@ -173,6 +168,7 @@ class Is
 	
 	/**
 	 * Check if is json
+	 *
 	 * @param $string
 	 * @return bool
 	 */
