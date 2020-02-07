@@ -48,11 +48,11 @@ class Gen
 	
 	/**
 	 * Generate random string
-	 * @param integer $len
+	 * @param int $len
 	 * @param bool $norepeat - characates cannot be repeated
 	 * @return string
 	 */
-	public static function randomString(integer $len, bool $norepeat = TRUE)
+	public static function randomString(int $len, bool $norepeat = TRUE)
 	{
 		$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		$max = strlen($chars) - 1;
