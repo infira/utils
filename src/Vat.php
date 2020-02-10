@@ -22,23 +22,23 @@ class Vat
 	
 	
 	/**
-	 * Add or substract vat from $amount
+	 * Get vat amount
 	 *
-	 * @param int|float      $pamount           - amount without vat
+	 * @param int|float      $amount            - amount without vat
 	 * @param bool           $amountContainsVat - amount without vat
 	 * @param int|float|null $vatPercent        - percent of vat, if null then default is used
 	 * @return float|int
 	 */
-	public static function get($pamount, $amountContainsVat, $vatPercent = NULL)
+	public static function get($amount, $amountContainsVat, $vatPercent = NULL)
 	{
-		$pamount = floatval($pamount);
+		$amount = floatval($amount);
 		if ($amountContainsVat == TRUE)
 		{
-			$output = $pamount - ($pamount / self::getPercent($vatPercent));
+			$output = $amount - ($amount / self::getPercent($vatPercent));
 		}
 		else
 		{
-			$output = ($pamount * self::getPercent($vatPercent)) - $pamount;
+			$output = ($amount * self::getPercent($vatPercent)) - $amount;
 		}
 		
 		return $output;
