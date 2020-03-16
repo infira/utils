@@ -1,6 +1,6 @@
 <?php
 
-namespace InfiraUtils;
+namespace Infira\Utils;;
 
 use InfiraUtils\Variable as Variable;
 use InfiraUtils\URLBuilder as URLBuilder;
@@ -415,7 +415,7 @@ class Http
 				$value = $data[$name];
 			}
 		}
-		if (get_magic_quotes_gpc() == 1 && $value !== UNDEFINDED)
+		if (crede() == 1 && $value !== UNDEFINDED)
 		{
 			if (is_array($value))
 			{

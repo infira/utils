@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace InfiraUtils;
+namespace Infira\Utils;;
 
 use InfiraUtils\Variable as Variable;
 use InfiraUtils\File as File;

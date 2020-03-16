@@ -1,6 +1,6 @@
 <?php
 
-namespace InfiraUtils;
+namespace Infira\Utils;;
 
 use InfiraUtils\Is as Is;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace InfiraUtils;
+namespace Infira\Utils;;
 /**
  * A class to fix values
  */

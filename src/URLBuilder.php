@@ -1,6 +1,6 @@
 <?php
 
-namespace InfiraUtils;
+namespace Infira\Utils;;
 /**
  * Class that handles url and link constructors
  */

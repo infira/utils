@@ -1,6 +1,6 @@
 <?php
 
-namespace InfiraUtils;
+namespace Infira\Utils;;
 
 use InfiraUtils\Variable as Variable;
 use InfiraUtils\Fix as Fix;
