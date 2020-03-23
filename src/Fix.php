@@ -1,6 +1,7 @@
 <?php
 
-namespace Infira\Utils;;
+namespace Infira\Utils;
+
 /**
  * A class to fix values
  */
@@ -36,7 +37,7 @@ class Fix
 	 * New line to br
 	 *
 	 * @param string $string
-	 * @param bool $isXHTML
+	 * @param bool   $isXHTML
 	 *            - is XHTML "<br />" used only in PHP 5.3.x
 	 * @return string
 	 */
@@ -85,7 +86,7 @@ class Fix
 	/**
 	 * Fix value with
 	 *
-	 * @param mixed $value
+	 * @param mixed  $value
 	 * @param string $with
 	 *            mysql - mysqli_escape_string int - intval float - floatval bool - ($value) ? true : false string - "$value"; arratint - fix array values with intval
 	 */
@@ -103,51 +104,51 @@ class Fix
 					{
 						case "trim" :
 							$value = trim($value);
-							break;
+						break;
 						case "mysql" :
 							$value = Db::escape($value);
-							break;
+						break;
 						case "int" :
 							$value = intval($value);
-							break;
+						break;
 						case "float" :
 							$value = floatval(str_replace(",", ".", $value));
-							break;
+						break;
 						case "excelnumber" :
 							$value = str_replace(".", ",", Variable::toString(Variable::toNumber($value)));
-							break;
+						break;
 						case "number" :
 							$value = Variable::toNumber($value);
-							break;
+						break;
 						case "bool" :
 							$value = ($value) ? TRUE : FALSE;
-							break;
+						break;
 						case "boolInt" :
 							$value = ($value) ? 1 : 0;
-							break;
+						break;
 						case "string" :
 							$value = "$value";
 						case "e" :
 							$value = "$value";
-							break;
+						break;
 						case "urlname" :
 							$value = self::urlName($value);
-							break;
+						break;
 						case "array" :
 							$value = (is_array($value)) ? $value : [];
-							break;
+						break;
 						case "date" :
 							$value = Date::toDate($value);
-							break;
+						break;
 						case "datetime" :
 							$value = Date::toDateTime($value);
-							break;
+						break;
 						case "sqldate" :
 							$value = Date::toSqlDate($value);
-							break;
+						break;
 						case "sqldatetime" :
 							$value = Date::toSqlDateTime($value);
-							break;
+						break;
 						case "arrayint" :
 							if (checkArray($value))
 							{
@@ -156,7 +157,7 @@ class Fix
 									$value[$k] = intval($v);
 								}
 							}
-							break;
+						break;
 					}
 				}
 				else
@@ -165,7 +166,7 @@ class Fix
 					{
 						case "array" :
 							$value = (is_array($value)) ? $value : [];
-							break;
+						break;
 						case "arrayint" :
 							if (checkArray($value))
 							{
@@ -174,7 +175,7 @@ class Fix
 									$value[$k] = intval($v);
 								}
 							}
-							break;
+						break;
 					}
 				}
 			}
@@ -334,7 +335,7 @@ class Fix
 	 * Fix and format price
 	 *
 	 * @param numeric $price
-	 * @param bool $removeTenth
+	 * @param bool    $removeTenth
 	 */
 	public static function price($price, $removeTenth = TRUE, $removeZeros = FALSE)
 	{
@@ -410,7 +411,7 @@ class Fix
 				return $path;
 			}
 			$path = str_replace("/", DIRECTORY_SEPARATOR, $path);
-			$len = strlen($path) - 1;
+			$len  = strlen($path) - 1;
 			if ($path{$len} != DIRECTORY_SEPARATOR and !is_file($path))
 			{
 				$path .= DIRECTORY_SEPARATOR;
@@ -425,7 +426,7 @@ class Fix
 	 */
 	public static function phone($phone, $prefix = "")
 	{
-		$phone = trim((string)$phone);
+		$phone  = trim((string)$phone);
 		$prefix = trim((string)$prefix);
 		if (strlen($phone) > 0)
 		{

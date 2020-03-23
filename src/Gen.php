@@ -1,14 +1,15 @@
 <?php
 
-namespace Infira\Utils;;
+namespace Infira\Utils;
 
-use InfiraUtils\Is as Is;
+use Infira\Utils\Is as Is;
 
 class Gen
 {
 	
 	/**
 	 * generate document no from ID
+	 *
 	 * @param int $documentID
 	 * @param int $length
 	 * @return string
@@ -48,14 +49,15 @@ class Gen
 	
 	/**
 	 * Generate random string
-	 * @param int $len
+	 *
+	 * @param int  $len
 	 * @param bool $norepeat - characates cannot be repeated
 	 * @return string
 	 */
 	public static function randomString(int $len, bool $norepeat = TRUE)
 	{
 		$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-		$max = strlen($chars) - 1;
+		$max   = strlen($chars) - 1;
 		
 		if ($norepeat && $len > $max + 1)
 		{
@@ -88,6 +90,7 @@ class Gen
 	
 	/**
 	 * Generate 32bit string from method argumetns, use for cache string
+	 *
 	 * @return string
 	 */
 	public static function cacheID()
@@ -97,6 +100,7 @@ class Gen
 	
 	/**
 	 * Generate cache string form aruments
+	 *
 	 * @param string|array $key
 	 * @return string
 	 */
@@ -150,15 +154,16 @@ class Gen
 	
 	/**
 	 * Generate reference number for banks
+	 *
 	 * @param int $number
 	 * @return int
 	 */
 	public static function referenceNumber(int $number): int
 	{
-		$svn = "$number";
+		$svn     = "$number";
 		$weights = [7, 3, 1];
-		$count = 0;
-		$sum = 0;
+		$count   = 0;
+		$sum     = 0;
 		for ($i = strlen($svn) - 1; $i >= 0; $i--)
 		{
 			$sum += $weights[$count % 3] * $svn[$i];

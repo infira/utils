@@ -1,6 +1,7 @@
 <?php
 
-namespace Infira\Utils;;
+namespace Infira\Utils;
+
 class Session
 {
 	protected static $SID = FALSE;
@@ -25,13 +26,14 @@ class Session
 	
 	/**
 	 * Config sessions
+	 *
 	 * @param string $sessionName - name of the PHP session
-	 * @param int $timeout timeout in seconds
+	 * @param int    $timeout     timeout in seconds
 	 */
 	public static function init(string $sessionName = "PHPSESSID", $timeout = 86400)
 	{
 		self::$sessionName = $sessionName;
-		self::$timeout = $timeout;
+		self::$timeout     = $timeout;
 		if (defined("USE_SESSION_NAME"))
 		{
 			self::$sessionName = "SESSION_NAME_" . USE_SESSION_NAME;
@@ -61,7 +63,7 @@ class Session
 		self::setSID(session_id());
 		
 		
-		$upTime = self::get("_sessionUpdateTime", time());
+		$upTime  = self::get("_sessionUpdateTime", time());
 		$between = time() - $upTime;
 		if ($between > self::$timeout and $upTime > 0)
 		{
@@ -87,6 +89,7 @@ class Session
 	
 	/**
 	 * Set a 32bit session id hash
+	 *
 	 * @param string $SID
 	 */
 	private static function setSID(string $SID)
@@ -96,6 +99,7 @@ class Session
 	
 	/**
 	 * Destroy session
+	 *
 	 * @param bool $takeNewID - take new session ID
 	 */
 	public static function destroy(bool $takeNewID = TRUE)
@@ -137,9 +141,9 @@ class Session
 			$sessid = $_COOKIE[$sn];
 			if (preg_match('/.{32},.*/si', $sessid))
 			{
-				$str = $sessid;
+				$str    = $sessid;
 				$sessid = substr($str, 0, 32);
-				$ex = explode(",", trim(substr($str, 33)));
+				$ex     = explode(",", trim(substr($str, 33)));
 				foreach ($ex as $part)
 				{
 					$part = trim($part);
@@ -188,8 +192,8 @@ class Session
 	/**
 	 * Get value from session, if this cache is true
 	 *
-	 * @param string $name - get value by $name, if null all session values are returned
-	 * @param mixed $default - if the var is not found this variable value is returned
+	 * @param string $name    - get value by $name, if null all session values are returned
+	 * @param mixed  $default - if the var is not found this variable value is returned
 	 * @return unknown
 	 */
 	public static function get($name = NULL, $default = FALSE)
@@ -220,7 +224,7 @@ class Session
 	 * Set value to session
 	 *
 	 * @param string $name
-	 * @param mixed $value
+	 * @param mixed  $value
 	 */
 	public static function set(string $name, $value)
 	{
@@ -261,6 +265,7 @@ class Session
 	
 	/**
 	 * Checks is session expired
+	 *
 	 * @return bool
 	 */
 	public static function isIsExpired(): bool

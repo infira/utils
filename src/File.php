@@ -1,9 +1,9 @@
 <?php
 
-namespace Infira\Utils;;
+namespace Infira\Utils;
 
-use InfiraUtils\Variable as Variable;
-use InfiraUtils\Fix as Fix;
+use Infira\Utils\Variable as Variable;
+use Infira\Utils\Fix as Fix;
 
 class File
 {
@@ -82,8 +82,8 @@ class File
 	/**
 	 * Get file extension
 	 *
-	 * @param string $file - filename with extension
-	 * @param bool $toLower - return extension name as lowercase string
+	 * @param string $file    - filename with extension
+	 * @param bool   $toLower - return extension name as lowercase string
 	 * @return string
 	 */
 	public static function getExtension(string $file, bool $toLower = TRUE)
@@ -124,13 +124,13 @@ class File
 	/**
 	 * Replace filename with new one
 	 *
-	 * @param string $file - file to be replaced
+	 * @param string $file    - file to be replaced
 	 * @param string $newName without extension
 	 * @return string
 	 */
 	public static function replaceName($file, $newName)
 	{
-		$info = pathinfo($file);
+		$info    = pathinfo($file);
 		$dirName = trim(Fix::dirPath($info["dirname"]));
 		
 		return $dirName . self::removeExtension($newName) . "." . $info["extension"];
@@ -150,11 +150,11 @@ class File
 	}
 	
 	/**
-	 * @param string $file
-	 * @param $content
-	 * @param string $writeMode
+	 * @param string  $file
+	 * @param         $content
+	 * @param string  $writeMode
 	 * @param integer $chmod - defautls to null, chmod will not be applied
-	 * @param mixed $owner - defautls to null, owner will not be applied
+	 * @param mixed   $owner - defautls to null, owner will not be applied
 	 * @return bool
 	 */
 	public static function create(string $file, $content, $writeMode = "w+", $chmod = NULL, $owner = NULL)
@@ -176,8 +176,9 @@ class File
 	
 	/**
 	 * Put content to file
+	 *
 	 * @param string $file
-	 * @param mixed $content
+	 * @param mixed  $content
 	 * @return false|int
 	 */
 	public static function put(string $file, $content)
@@ -187,8 +188,8 @@ class File
 	
 	/**
 	 * @param string $file
-	 * @param mixed $line
-	 * @param bool $addLineBreak - add break to end of the line
+	 * @param mixed  $line
+	 * @param bool   $addLineBreak - add break to end of the line
 	 */
 	public static function addLine(string $file, $line, $addLineBreak = TRUE)
 	{
@@ -202,7 +203,7 @@ class File
 	}
 	
 	/**
-	 * @param $file
+	 * @param       $file
 	 * @param array $steamContextOptions
 	 * @return bool|false|string
 	 */
@@ -242,9 +243,10 @@ class File
 	
 	/**
 	 * Send file to browser to download
-	 * @param string $file - file path
+	 *
+	 * @param string      $file - file path
 	 * @param string|NULL $downloadAsFileName
-	 * @param bool $deleteAfterDownload
+	 * @param bool        $deleteAfterDownload
 	 */
 	public static function forceDownload(string $file, string $downloadAsFileName = NULL, bool $deleteAfterDownload = FALSE)
 	{
@@ -280,44 +282,44 @@ class File
 	/**
 	 * Get file mime type
 	 *
-	 * @param string $file - full file location
+	 * @param string $file    - full file location
 	 * @param string $default - if mime type is not found then application/octet-stream is returned
 	 * @return string
 	 */
 	public static function getMimeType(string $file, $default = "application/octet-stream"): string
 	{
-		$ext = self::getExtension($file);
-		$types = [];
-		$types["pdf"] = "application/pdf";
-		$types["exe"] = "application/octet-stream";
-		$types["zip"] = "application/zip";
-		$types["doc"] = "application/msword";
-		$types["xls"] = "application/vnd.ms-excel";
-		$types["ppt"] = "application/vnd.ms-powerpoint";
-		$types["gif"] = "image/gif";
-		$types["jpeg"] = $types["jpg"] = $types["jpe"] = "image/jpg";
-		$types['avi'] = 'video/avi';
-		$types['bmp'] = 'image/bmp';
-		$types['css'] = 'text/css';
-		$types['htm'] = 'text/html';
-		$types['html'] = 'text/html';
+		$ext            = self::getExtension($file);
+		$types          = [];
+		$types["pdf"]   = "application/pdf";
+		$types["exe"]   = "application/octet-stream";
+		$types["zip"]   = "application/zip";
+		$types["doc"]   = "application/msword";
+		$types["xls"]   = "application/vnd.ms-excel";
+		$types["ppt"]   = "application/vnd.ms-powerpoint";
+		$types["gif"]   = "image/gif";
+		$types["jpeg"]  = $types["jpg"] = $types["jpe"] = "image/jpg";
+		$types['avi']   = 'video/avi';
+		$types['bmp']   = 'image/bmp';
+		$types['css']   = 'text/css';
+		$types['htm']   = 'text/html';
+		$types['html']  = 'text/html';
 		$types['htmls'] = 'text/html';
-		$types['ico'] = 'image/x-ico';
-		$types['js'] = 'text/javascript';
-		$types['midi'] = 'audio/midi';
-		$types['mid'] = 'audio/midi';
-		$types['mod'] = 'audio/mod';
-		$types['mov'] = 'movie/quicktime';
-		$types['mp3'] = 'audio/mp3';
-		$types['mpg'] = 'video/mpeg';
-		$types['mpeg'] = 'video/mpeg';
-		$types['png'] = 'image/png';
-		$types['swf'] = 'application/shockwave-flash';
-		$types['tif'] = 'image/tiff';
-		$types['tiff'] = 'image/tiff';
-		$types['wav'] = 'audio/wav';
-		$types['xbm'] = 'image/xbm';
-		$types['xml'] = 'text/xml';
+		$types['ico']   = 'image/x-ico';
+		$types['js']    = 'text/javascript';
+		$types['midi']  = 'audio/midi';
+		$types['mid']   = 'audio/midi';
+		$types['mod']   = 'audio/mod';
+		$types['mov']   = 'movie/quicktime';
+		$types['mp3']   = 'audio/mp3';
+		$types['mpg']   = 'video/mpeg';
+		$types['mpeg']  = 'video/mpeg';
+		$types['png']   = 'image/png';
+		$types['swf']   = 'application/shockwave-flash';
+		$types['tif']   = 'image/tiff';
+		$types['tiff']  = 'image/tiff';
+		$types['wav']   = 'audio/wav';
+		$types['xbm']   = 'image/xbm';
+		$types['xml']   = 'text/xml';
 		if (isset($types[$ext]))
 		{
 			return $types[$ext];
@@ -333,7 +335,7 @@ class File
 	 *
 	 * @param string $file
 	 * @param string $fileName
-	 * @param bool $deleteAfterDownload
+	 * @param bool   $deleteAfterDownload
 	 */
 	public static function show(string $file, bool $deleteAfterDownload = FALSE)
 	{
@@ -362,8 +364,8 @@ class File
 	 */
 	public static function formatSize(string $file): string
 	{
-		$bytes = filesize($file);
-		$units = ['b', 'kb', 'mb', 'gb'];
+		$bytes     = filesize($file);
+		$units     = ['b', 'kb', 'mb', 'gb'];
 		$converted = $bytes . ' ' . $units[0];
 		for ($i = 0; $i < count($units); $i++)
 		{
@@ -380,7 +382,7 @@ class File
 	 * Readable filesize
 	 *
 	 * @param string $fileUrl - full url
-	 * @param string $saveTo - path
+	 * @param string $saveTo  - path
 	 * @return bool
 	 */
 	public static function download($fileUrl, $saveTo)

@@ -1,15 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Infira\Utils;;
+namespace Infira\Utils;
 
-use InfiraUtils\Variable as Variable;
-use InfiraUtils\File as File;
+use Infira\Utils\Variable as Variable;
+use Infira\Utils\File as File;
 
 class Dir
 {
 	
 	/**
 	 * Delete a folder/directory
+	 *
 	 * @param string $path
 	 * @return bool
 	 */
@@ -30,8 +31,9 @@ class Dir
 	
 	/**
 	 * Flush folder content
+	 *
 	 * @param string $path
-	 * @param array $exlude
+	 * @param array  $exlude
 	 * @return bool
 	 */
 	public static function flush(string $path, array $exlude = []): bool
@@ -67,7 +69,8 @@ class Dir
 	
 	/**
 	 * If folder doest no exists make it
-	 * @param $path
+	 *
+	 * @param     $path
 	 * @param int $chmod - chod it
 	 * @return string created dir path
 	 */
@@ -82,16 +85,17 @@ class Dir
 	}
 	
 	/** get path content
+	 *
 	 * @param string $path
-	 * @param array $exlude
-	 * @param bool $recursive
-	 * @param bool $absolutePath - get absolute paths
+	 * @param array  $exlude
+	 * @param bool   $recursive
+	 * @param bool   $absolutePath - get absolute paths
 	 * @return array
 	 */
 	public static function getContents(string $path, $exlude = [], bool $recursive = FALSE, bool $absolutePath = FALSE): array
 	{
 		set_time_limit(3);
-		$exlude = Variable::toArray($exlude);
+		$exlude   = Variable::toArray($exlude);
 		$exlude[] = ".";
 		$exlude[] = "..";
 		if (is_dir($path))
@@ -100,7 +104,7 @@ class Dir
 			{
 				$getRecursive = function ($path, $mainPrefix = "") use (&$exlude, &$getRecursive)
 				{
-					$r = scandir($path);
+					$r  = scandir($path);
 					$nr = [];
 					foreach ($r as $p)
 					{
@@ -116,7 +120,7 @@ class Dir
 						if (!in_array($p, [".", ".."]))
 						{
 							$nr[] = $prefix;
-							$pp = $path . DIRECTORY_SEPARATOR . $p;
+							$pp   = $path . DIRECTORY_SEPARATOR . $p;
 							if (is_dir($pp))
 							{
 								$nr = array_merge($nr, $getRecursive($pp, $prefix));
@@ -126,7 +130,7 @@ class Dir
 					
 					return $nr;
 				};
-				$r = $getRecursive($path);
+				$r            = $getRecursive($path);
 			}
 			else
 			{

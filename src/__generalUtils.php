@@ -1,12 +1,13 @@
 <?php
 /**
  * Parse str, converts name=value to array
+ *
  * @param string $string
  * @return array
  */
 function parseStr(string $string): array
 {
-	$data = [];
+	$data   = [];
 	$string = trim($string);
 	
 	$string = str_replace("&amp;", "&", $string);
@@ -78,9 +79,9 @@ function getUserIP()
 
 function explodeJoin($explodeDelimiter, $str, $joinDelimiter, $joinKeys = FALSE)
 {
-	$ex = explode($explodeDelimiter, $str);
-	$joinKeys = InfiraUtils\Variable::toArray($joinKeys);
-	$data = [];
+	$ex       = explode($explodeDelimiter, $str);
+	$joinKeys = \Infira\Utils\Variable::toArray($joinKeys);
+	$data     = [];
 	foreach ($ex as $key => $val)
 	{
 		$val = trim($val);
@@ -187,9 +188,9 @@ function checkArray($array)
 }
 
 $GLOBALS["__globalFlags__"] = FALSE;
-function flag($name = UNDEFINDED, $value = UNDEFINDED)
+function flag($name = NULL, $value = NULL)
 {
-	if ($name !== UNDEFINDED AND $value === UNDEFINDED)
+	if ($name !== NULL AND $value === NULL)
 	{
 		if (!isset($GLOBALS["__globalFlags__"][$name]))
 		{
@@ -212,16 +213,15 @@ function pre($var)
 /**
  * Debug function is to debug
  *
- * @param $variable can
- *            be all kind of type
+ * @param mixed        $variable - can be all kind of type
  * @param unknown_type $trace
  */
 $GLOBALS["debugIsActive"] = FALSE;
 function debug()
 {
 	$GLOBALS["debugIsActive"] = TRUE;
-	$args = func_get_args();
-	$html = "";
+	$args                     = func_get_args();
+	$html                     = "";
 	if (isAjaxRequest())
 	{
 		$html = "[DEBUG_MSG].\n";
@@ -264,9 +264,10 @@ function isDebugActive()
 }
 
 $GLOBALS["debugCollection"] = [];
-function collect($v1, $v2 = UNDEFINDED)
+function collect()
 {
-	$GLOBALS["debugCollection"][] = ($v2 === UNDEFINDED) ? $v1 : func_get_args();
+	$args                         = func_get_args();
+	$GLOBALS["debugCollection"][] = (count($args) == 1) ? $args[0] : $args;
 }
 
 function debugCollection()
@@ -288,10 +289,10 @@ function cleanOutput($isRecursive = FALSE)
 }
 
 
-function debugClean($v1, $v2 = UNDEFINDED)
+function debugClean($v1, $v2 = NULL)
 {
-	cleanOutput();
-	debug(($v2 === UNDEFINDED) ? $v1 : func_get_args());
+	$args = func_get_args();
+	debug((count($args) == 1) ? $args[0] : $args);
 }
 
 
@@ -319,10 +320,10 @@ function dump($variable, $echo = FALSE)
 function getTrace($startAt = 0)
 {
 	$backTrace = debug_backtrace();
-	$until = 15;
-	$trace = "<br />";
-	$start = intval($startAt);
-	$nr = 1;
+	$until     = 15;
+	$trace     = "<br />";
+	$start     = intval($startAt);
+	$nr        = 1;
 	for ($i = $start; $i <= $until; $i++)
 	{
 		if (isset($backTrace[$i]['file']))
@@ -377,6 +378,7 @@ function defineOrNot($name, $value)
 
 /**
  * Alias to throw new Error
+ *
  * @param string $msg
  * @throws Exception
  */
@@ -387,6 +389,7 @@ function error(string $msg)
 
 /**
  * Alias to throw new exeption
+ *
  * @param $msg
  * @throws Exception
  */

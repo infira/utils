@@ -1,6 +1,7 @@
 <?php
 
-namespace Infira\Utils;;
+namespace Infira\Utils;
+
 /**
  * Class that handles url and link constructors
  */
@@ -11,21 +12,22 @@ class URLBuilder
 	
 	/**
 	 * Its like construct
+	 *
 	 * @param string $mainVar - the main var of url, for example route, http://domain.com/?route=mainpage
-	 * @param string $root - base url for url builder for example http://domain.com/, defaults to nothing
+	 * @param string $root    - base url for url builder for example http://domain.com/, defaults to nothing
 	 */
 	public static function init(string $mainVar = "route", string $root = "")
 	{
 		self::$mainVar = $mainVar;
-		self::$root = $root;
+		self::$root    = $root;
 	}
 	
 	/**
 	 * Generate url string
 	 *
 	 * @param string|array $urlParams
-	 * @param string|array $aie - add to url if exists in current url, example current url is ?name=gen, self::get(["lastName"=>"series"],"name") outpiuts url ?name=gen&lastName=series
-	 * @param bool $getNiceUrl - true to return nice url instead of /?id=mainPage&subPage=content you get /mainPage?subPage=content
+	 * @param string|array $aie        - add to url if exists in current url, example current url is ?name=gen, self::get(["lastName"=>"series"],"name") outpiuts url ?name=gen&lastName=series
+	 * @param bool         $getNiceUrl - true to return nice url instead of /?id=mainPage&subPage=content you get /mainPage?subPage=content
 	 * @return string
 	 */
 	public static function get($urlParams = [], $aie = [], $getNiceUrl = TRUE)
@@ -35,7 +37,7 @@ class URLBuilder
 		{
 			if (count($urlParams) == 2 && isset($urlParams[self::$mainVar]) and isset($urlParams[0]))
 			{
-				$tmpID = $urlParams[self::$mainVar];
+				$tmpID     = $urlParams[self::$mainVar];
 				$urlParams = $urlParams[0];
 			}
 		}
@@ -47,7 +49,7 @@ class URLBuilder
 			}
 			else
 			{
-				$tmpID = $urlParams;
+				$tmpID     = $urlParams;
 				$urlParams = [];
 			}
 		}
@@ -85,9 +87,9 @@ class URLBuilder
 		
 		if ($getNiceUrl AND isset($urlParams[self::$mainVar]))
 		{
-			$mv = $urlParams[self::$mainVar];
+			$mv  = $urlParams[self::$mainVar];
 			$mvr = $urlParams[self::$mainVar];
-			$q = "";
+			$q   = "";
 			if (count($urlParams) > 1)
 			{
 				$q = "?";

@@ -1,6 +1,7 @@
 <?php
 
-namespace Infira\Utils;;
+namespace Infira\Utils;
+
 class Is
 {
 	/**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Infira\Utils;;
+namespace Infira\Utils;
 
 /**
  * This class handles date strings

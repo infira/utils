@@ -1,9 +1,9 @@
 <?php
 
-namespace Infira\Utils;;
+namespace Infira\Utils;
 
-use InfiraUtils\Variable as Variable;
-use InfiraUtils\URLBuilder as URLBuilder;
+use Infira\Utils\Variable as Variable;
+use Infira\Utils\URLBuilder as URLBuilder;
 
 /**
  * Class to handle $_GET, $_POST, _REQUEST, $_FILES server variable
@@ -14,7 +14,8 @@ class Http
 	
 	/**
 	 * Http constructor.
-	 * @param string $mainVar - var name in $_GET what defines the page, defaults to route
+	 *
+	 * @param string   $mainVar         - var name in $_GET what defines the page, defaults to route
 	 * @param callable $getParamsParser - add your own _GET params parser
 	 */
 	public static final function init(string $mainVar = "route", $getParamsParser = FALSE)
@@ -29,8 +30,8 @@ class Http
 	/**
 	 * Returns a $_POST OR $_GET variable value
 	 *
-	 * @param string $name in case of NULL returns all $_GET||$_POST
-	 * @param mixed $default - default value on not found
+	 * @param string $name    in case of NULL returns all $_GET||$_POST
+	 * @param mixed  $default - default value on not found
 	 * @return mixed
 	 */
 	public static function get($name = NULL, $default = NULL)
@@ -50,8 +51,8 @@ class Http
 	/**
 	 * Returns a $_GET variable value
 	 *
-	 * @param string $name in case of NULL returns all $_GET
-	 * @param mixed $default - default value on not found
+	 * @param string $name    in case of NULL returns all $_GET
+	 * @param mixed  $default - default value on not found
 	 * @return mixed
 	 */
 	public static function getGET($name = NULL, $default = NULL)
@@ -62,8 +63,8 @@ class Http
 	/**
 	 * Returns a $_POST variable value
 	 *
-	 * @param string $name in case of NULL returns all $_GET
-	 * @param mixed $default - default value on not found
+	 * @param string $name    in case of NULL returns all $_GET
+	 * @param mixed  $default - default value on not found
 	 * @return mixed
 	 */
 	public static function getPOST($name = NULL, $default = NULL)
@@ -74,8 +75,8 @@ class Http
 	/**
 	 * Returns a $_FILES variable value
 	 *
-	 * @param string $name in case of NULL returns all $_GET
-	 * @param mixed $default - default value on not found
+	 * @param string $name    in case of NULL returns all $_GET
+	 * @param mixed  $default - default value on not found
 	 * @return mixed
 	 */
 	public static function getFILE($name = NULL)
@@ -144,7 +145,8 @@ class Http
 	
 	/**
 	 * Set a new $_GET var and value
-	 * @param $name
+	 *
+	 * @param       $name
 	 * @param mixed $value
 	 * @return bool
 	 */
@@ -155,7 +157,8 @@ class Http
 	
 	/**
 	 * Set var and var value to $_POST
-	 * @param bool $name
+	 *
+	 * @param bool  $name
 	 * @param mixed $value
 	 * @return bool
 	 */
@@ -188,6 +191,7 @@ class Http
 	
 	/**
 	 * Flush $_POST values
+	 *
 	 * @return bool
 	 */
 	public static function flushPOST()
@@ -197,6 +201,7 @@ class Http
 	
 	/**
 	 * Flush $_FILES values
+	 *
 	 * @return bool
 	 */
 	public static function flushFILES()
@@ -206,6 +211,7 @@ class Http
 	
 	/**
 	 * Flush $_GET values
+	 *
 	 * @return bool
 	 */
 	public static function flushGET()
@@ -225,6 +231,7 @@ class Http
 	
 	/**
 	 * Check is $_SERVER["REQUEST_METHOD"]
+	 *
 	 * @param string $method
 	 * @return bool
 	 */
@@ -248,8 +255,9 @@ class Http
 	
 	/**
 	 * Got to link
-	 * @param string $link - where to go
-	 * @param bool $redirect301 - use header 301 to redirect
+	 *
+	 * @param string $link        - where to go
+	 * @param bool   $redirect301 - use header 301 to redirect
 	 */
 	public static function go(string $link = "", bool $redirect301 = FALSE)
 	{
@@ -309,6 +317,7 @@ class Http
 	
 	/**
 	 * Get referer url
+	 *
 	 * @return string
 	 */
 	public static function getReferer(): string
@@ -318,6 +327,7 @@ class Http
 	
 	/**
 	 * Get Current request url
+	 *
 	 * @return string
 	 */
 	public static function getCurrentUrl(): string
@@ -396,14 +406,14 @@ class Http
 	 * Gets a http value
 	 *
 	 * @param string $name
-	 * @param string $from (get,post,request)
-	 * @param mixed $default - default value on not found
+	 * @param string $from    (get,post,request)
+	 * @param mixed  $default - default value on not found
 	 * @return variable on success, return false on unsuccess
 	 */
 	private static function getVar($name = NULL, $from, $default = NULL)
 	{
 		$value = "__UND_DEF__";
-		$data = self::getServerData($from);
+		$data  = self::getServerData($from);
 		if ($name === NULL)
 		{
 			$value = $data;
@@ -413,16 +423,6 @@ class Http
 			if (isset($data[$name]))
 			{
 				$value = $data[$name];
-			}
-		}
-		if (crede() == 1 && $value !== UNDEFINDED)
-		{
-			if (is_array($value))
-			{
-				foreach ($value as $n => $v)
-				{
-					$value[$n] = $v;
-				}
 			}
 		}
 		if ($value === "__UND_DEF__")
@@ -435,6 +435,7 @@ class Http
 	
 	/**
 	 * Set var and var value to HTTP variable
+	 *
 	 * @param $name
 	 * @param $value
 	 * @param $to - (get,post,files,request)

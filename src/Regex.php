@@ -1,13 +1,13 @@
 <?php
 
-namespace Infira\Utils;;
+namespace Infira\Utils;
 
 class Regex
 {
 	/**
-	 * @param string $regex - regular expression pattern
-	 * @param string $subject - where to find matches
-	 * @param bool $returnOnFalse - return that if not found
+	 * @param string $regex         - regular expression pattern
+	 * @param string $subject       - where to find matches
+	 * @param bool   $returnOnFalse - return that if not found
 	 * @return mixed
 	 */
 	public static function getMatches(string $regex, string $subject, $returnOnFalse = FALSE)
@@ -27,10 +27,11 @@ class Regex
 	
 	/**
 	 * Get a single match
-	 * @param string $regex - regular expression pattern
+	 *
+	 * @param string $regex   - regular expression pattern
 	 * @param string $subject - where to find matches
-	 * @param int $nr
-	 * @param bool $returnOnFalse
+	 * @param int    $nr
+	 * @param bool   $returnOnFalse
 	 * @return mixed
 	 */
 	public static function getMatch(string $regex, string $subject, int $nr = 0, $returnOnFalse = FALSE)
@@ -50,7 +51,7 @@ class Regex
 	/**
 	 * Function to check is given value match to given preg_ regeq
 	 *
-	 * @param string $regex - regular expression pattern
+	 * @param string $regex   - regular expression pattern
 	 * @param string $subject - where to find matches
 	 * @return bool
 	 */
@@ -70,6 +71,7 @@ class Regex
 	
 	/**
 	 * Is a regular expression
+	 *
 	 * @param $str
 	 * @return bool
 	 */
@@ -82,6 +84,7 @@ class Regex
 	
 	/**
 	 * string to pattern
+	 *
 	 * @param string $pattern
 	 * @return string
 	 */

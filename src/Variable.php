@@ -1,6 +1,7 @@
 <?php
 
-namespace Infira\Utils;;
+namespace Infira\Utils;
+
 /**
  * A collection of static methods to manipulate with variables
  */
