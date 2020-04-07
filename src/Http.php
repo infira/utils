@@ -3,24 +3,19 @@
 namespace Infira\Utils;
 
 use Infira\Utils\Variable as Variable;
-use Infira\Utils\URLBuilder as URLBuilder;
 
 /**
  * Class to handle $_GET, $_POST, _REQUEST, $_FILES server variable
  */
 class Http
 {
-	private static $mainVar = "route";
-	
 	/**
 	 * Http constructor.
 	 *
-	 * @param string   $mainVar         - var name in $_GET what defines the page, defaults to route
 	 * @param callable $getParamsParser - add your own _GET params parser
 	 */
-	public static final function init(string $mainVar = "route", $getParamsParser = FALSE)
+	public static final function init($getParamsParser = FALSE)
 	{
-		self::$mainVar = $mainVar;
 		if (is_callable($getParamsParser))
 		{
 			$_GET = $getParamsParser($_GET);
@@ -261,18 +256,6 @@ class Http
 	 */
 	public static function go(string $link = "", bool $redirect301 = FALSE)
 	{
-		if ($link == '')
-		{
-			$link = URLBuilder::get([self::$mainVar => 1]);
-		}
-		elseif (checkArray($link))
-		{
-			$link = URLBuilder::get($link, FALSE);
-		}
-		elseif (Is::number($link))
-		{
-			$link = URLBuilder::get([self::$mainVar => $link]);
-		}
 		$link = str_replace('&amp;', '&', $link);
 		$llen = strlen($link) - 1;
 		if ($link{$llen} == "/")
@@ -307,11 +290,11 @@ class Http
 	/**
 	 * Redirect to referer url
 	 *
-	 * @param string|array $extra - add extra params to link
+	 * @param string $addExtraToRefLink - add extra params to link
 	 */
-	public static function goToReferer($extra = FALSE)
+	public static function goToReferer(string $addExtraToRefLink = '')
 	{
-		$link = self::getReferer() . URLBuilder::buildParams($extra);
+		$link = self::getReferer() . $addExtraToRefLink;
 		self::go($link);
 	}
 	
