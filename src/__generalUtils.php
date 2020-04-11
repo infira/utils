@@ -181,10 +181,7 @@ function checkArray($array)
 			return TRUE;
 		}
 	}
-	else
-	{
-		return FALSE;
-	}
+	return FALSE;
 }
 
 $GLOBALS["__globalFlags__"] = FALSE;
