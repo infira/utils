@@ -125,7 +125,7 @@ function eachArray($array, $function)
 		foreach ($array as $key => $item)
 		{
 			$newVal = $function($key, $item);
-			if ($newVal == EACH_ARRAY_DELETE)
+			if ($newVal === EACH_ARRAY_DELETE)
 			{
 				unset($array[$key]);
 			}
