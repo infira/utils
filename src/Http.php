@@ -3,18 +3,21 @@
 namespace Infira\Utils;
 
 use Infira\Utils\Variable as Variable;
+use Infira\Error\Error;
 
 /**
- * Class to handle $_GET, $_POST, _REQUEST, $_FILES server variable
+ * Class to handle $_GET, $_POST, _REQUEST, $_FILES , $_SERVER variables
  */
 class Http
 {
+	const UNDEFINED = '__U-N-D-D-E-F-I-N-E-D__';
+	
 	/**
 	 * Http constructor.
 	 *
 	 * @param callable $getParamsParser - add your own _GET params parser
 	 */
-	public static final function init($getParamsParser = FALSE)
+	public static final function init($getParamsParser = false)
 	{
 		if (is_callable($getParamsParser))
 		{
@@ -23,196 +26,321 @@ class Http
 	}
 	
 	/**
-	 * Returns a $_POST OR $_GET variable value
+	 * Returns a $_POST OR $_GET variable value by $name
 	 *
-	 * @param string $name    in case of NULL returns all $_GET||$_POST
+	 * @param string $name    - variable name
 	 * @param mixed  $default - default value on not found
 	 * @return mixed
 	 */
-	public static function get($name = NULL, $default = NULL)
+	public static function get(string $name, $default = null)
 	{
 		if (self::existsPOST($name))
 		{
-			return self::getVar($name, "post", $default);
+			return self::getVar($name, 'post', $default);
 		}
 		if (self::existsGET($name))
 		{
-			return self::getVar($name, "get", $default);
+			return self::getVar($name, 'get', $default);
 		}
 		
 		return $default;
 	}
 	
 	/**
-	 * Returns a $_GET variable value
+	 * Does variable exists in  either $_POST OR $_GET
 	 *
-	 * @param string $name    in case of NULL returns all $_GET
+	 * @param string $name
+	 * @return bool
+	 */
+	public static function exists(string $name)
+	{
+		return (self::existsPOST($name) or self::existsGET($name));
+	}
+	
+	################################################################################ START of $_GET methods
+	
+	/**
+	 * Does variable exists in in $_GET
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public static function existsGET(string $name)
+	{
+		return self::existsVar($name, 'get');
+	}
+	
+	/**
+	 * Returns a $_GET[$name] value
+	 * Leave all parametrs blank to get $_GET
+	 *
+	 * @param string $name    - variable name
 	 * @param mixed  $default - default value on not found
 	 * @return mixed
 	 */
-	public static function getGET($name = NULL, $default = NULL)
+	public static function getGET(string $name = self::UNDEFINED, $default = null)
 	{
-		return self::getVar($name, "get", $default);
+		return self::getVar($name, 'get', $default);
 	}
 	
 	/**
-	 * Returns a $_POST variable value
+	 * Set variable value into $_GET
 	 *
-	 * @param string $name    in case of NULL returns all $_GET
-	 * @param mixed  $default - default value on not found
-	 * @return mixed
+	 * @param string $name
+	 * @param mixed  $value
 	 */
-	public static function getPOST($name = NULL, $default = NULL)
+	public static function setGET(string $name, $value)
 	{
-		return self::getVar($name, "post", $default);
+		self::setVar($name, 'get', $value);
 	}
 	
 	/**
-	 * Returns a $_FILES variable value
-	 *
-	 * @param string $name    in case of NULL returns all $_GET
-	 * @param mixed  $default - default value on not found
-	 * @return mixed
-	 */
-	public static function getFILE($name = NULL)
-	{
-		return self::getVar($name, 'files');
-	}
-	
-	/**
-	 * Returns is the request type post
-	 */
-	public static function isPOST()
-	{
-		if (isset($_SERVER["REQUEST_METHOD"]))
-		{
-			if (self::isRequestMethod("post"))
-			{
-				return TRUE;
-			}
-		}
-		
-		return FALSE;
-	}
-	
-	/**
-	 * Checks is variable exists either $_POST OR $_GET
+	 * Delete variable from $_GET
 	 *
 	 * @param string $name
 	 * @return bool
 	 */
-	public static function exists($name)
+	public static function deleteGET(string $name)
 	{
-		return (self::existsPOST($name) OR self::existsGET($name));
-	}
-	
-	/**
-	 * Checks is variable exists in $_POST
-	 *
-	 * @param string $name
-	 * @return bool
-	 */
-	public static function existsPOST($name)
-	{
-		if (!isset($_POST))
-		{
-			return FALSE;
-		}
-		
-		return array_key_exists($name, $_POST);
-	}
-	
-	/**
-	 * Checks is variable exists in $_GET
-	 *
-	 * @param string $name
-	 * @return bool
-	 */
-	public static function existsGET($name)
-	{
-		if (!isset($_GET))
-		{
-			return FALSE;
-		}
-		
-		return array_key_exists($name, $_GET);
-	}
-	
-	/**
-	 * Set a new $_GET var and value
-	 *
-	 * @param       $name
-	 * @param mixed $value
-	 * @return bool
-	 */
-	public static function setGET($name, $value = NULL)
-	{
-		return self::setVar($name, "get", $value);
-	}
-	
-	/**
-	 * Set var and var value to $_POST
-	 *
-	 * @param bool  $name
-	 * @param mixed $value
-	 * @return bool
-	 */
-	public static function setPOST($name = FALSE, $value = NULL)
-	{
-		return self::setVar($name, "post", $value);
-	}
-	
-	/**
-	 * Delete var from $_GET
-	 *
-	 * @param string $name
-	 * @return bool
-	 */
-	public static function deleteGET($name)
-	{
-		return self::delete($name, "get");
-	}
-	
-	/**
-	 * Delete var from $_POST
-	 *
-	 * @param string $name
-	 * @return bool
-	 */
-	public static function deletePOST($name)
-	{
-		return self::delete($name, "post");
-	}
-	
-	/**
-	 * Flush $_POST values
-	 *
-	 * @return bool
-	 */
-	public static function flushPOST()
-	{
-		return self::doFlush("post");
-	}
-	
-	/**
-	 * Flush $_FILES values
-	 *
-	 * @return bool
-	 */
-	public static function flushFILES()
-	{
-		return self::doFlush("files");
+		return self::deleteVariable($name, 'get');
 	}
 	
 	/**
 	 * Flush $_GET values
 	 *
+	 * @param array $replace = [] - replace $_GET with
 	 * @return bool
 	 */
-	public static function flushGET()
+	public static function flushGET(array $replace = [])
 	{
-		return self::doFlush("get");
+		return self::flushVariable('get', $replace);
 	}
+	################################################################################ END of $_GET methods
+	
+	################################################################################ START of $_POST methods
+	/**
+	 * Does variable exists in in $_POST
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public static function existsPOST(string $name)
+	{
+		return self::existsVar($name, 'post');
+	}
+	
+	/**
+	 * Returns a $_POST[$name] value
+	 * Leave all parametrs blank to get $_POST
+	 *
+	 * @param string $name    - variable name
+	 * @param mixed  $default - default value on not found
+	 * @return mixed
+	 */
+	public static function getPOST(string $name = self::UNDEFINED, $default = null)
+	{
+		return self::getVar($name, 'post', $default);
+	}
+	
+	/**
+	 * Set variable value into $_POST
+	 *
+	 * @param string $name
+	 * @param mixed  $value
+	 */
+	public static function setPOST(string $name, $value)
+	{
+		self::setVar($name, 'post', $value);
+	}
+	
+	/**
+	 * Delete variable from $_POST
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public static function deletePOST(string $name)
+	{
+		return self::deleteVariable($name, 'post');
+	}
+	
+	/**
+	 * Flush $_POST values
+	 *
+	 * @param array $replace = [] - replace $_POST with
+	 * @return bool
+	 */
+	public static function flushPOST(array $replace = [])
+	{
+		return self::flushVariable('post', $replace);
+	}
+	################################################################################ END of $_POST methods
+	
+	################################################################################ START of $_FILES methods
+	/**
+	 * Does variable exists in in $_FILES
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public static function existsFILE(string $name)
+	{
+		return self::existsVar($name, 'files');
+	}
+	
+	/**
+	 * Returns a $_FILES[$name] value
+	 * Leave all parametrs blank to get $_FILES
+	 *
+	 * @param string $name    - variable name
+	 * @param mixed  $default - default value on not found
+	 * @return mixed
+	 */
+	public static function getFILE(string $name = self::UNDEFINED, $default = null)
+	{
+		return self::getVar($name, 'files', $default);
+	}
+	
+	/**
+	 * Set variable value into $_FILES
+	 *
+	 * @param string $name
+	 * @param mixed  $value
+	 */
+	public static function setFILE(string $name, $value)
+	{
+		self::setVar($name, 'files', $value);
+	}
+	
+	/**
+	 * Delete variable from $_FILES
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public static function deleteFILE(string $name)
+	{
+		return self::deleteVariable($name, 'files');
+	}
+	
+	/**
+	 * Flush $_FILES values
+	 *
+	 * @param array $replace = [] - replace $_FILES with
+	 * @return bool
+	 */
+	public static function flushFILE(array $replace = [])
+	{
+		return self::flushVariable('files', $replace);
+	}
+	################################################################################ END of $_FILES methods
+	
+	################################################################################ START of $_REQUEST methods
+	/**
+	 * Does variable exists in in $_REQUEST
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public static function existsREQUEST(string $name)
+	{
+		return self::existsVar($name, 'request');
+	}
+	
+	/**
+	 * Returns a $_REQUEST[$name] value
+	 * Leave all parametrs blank to get $_REQUEST
+	 *
+	 * @param string $name    - variable name
+	 * @param mixed  $default - default value on not found
+	 * @return mixed
+	 */
+	public static function getREQUEST(string $name = self::UNDEFINED, $default = null)
+	{
+		return self::getVar($name, 'request', $default);
+	}
+	
+	/**
+	 * Set variable value into $_REQUEST
+	 *
+	 * @param string $name
+	 * @param mixed  $value
+	 */
+	public static function setREQUEST(string $name, $value)
+	{
+		self::setVar($name, 'request', $value);
+	}
+	
+	/**
+	 * Delete variable from $_REQUEST
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public static function deleteREQUEST(string $name)
+	{
+		return self::deleteVariable($name, 'request');
+	}
+	
+	/**
+	 * Flush $_REQUEST values
+	 *
+	 * @param array $replace = [] - replace $_REQUEST with
+	 * @return bool
+	 */
+	public static function flushREQUEST(array $replace = [])
+	{
+		return self::flushVariable('request', $replace);
+	}
+	################################################################################ END of $_REQUEST methods
+	
+	################################################################################ START of $_SERVER methods
+	/**
+	 * Does variable exists in in $_SERVER
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public static function existsSERVER(string $name)
+	{
+		return self::existsVar($name, 'server');
+	}
+	
+	/**
+	 * Returns a $_SERVER[$name] value
+	 * Leave all parametrs blank to get $_SERVER
+	 *
+	 * @param string $name    - variable name
+	 * @param mixed  $default - default value on not found
+	 * @return mixed
+	 */
+	public static function getSERVER(string $name = self::UNDEFINED, $default = null)
+	{
+		return self::getVar($name, 'server', $default);
+	}
+	
+	/**
+	 * Set variable value into $_SERVER
+	 *
+	 * @param string $name
+	 * @param mixed  $value
+	 */
+	public static function setSERVER(string $name, $value)
+	{
+		self::setVar($name, 'server', $value);
+	}
+	################################################################################ END of $_SERVER methods
+	
+	/**
+	 * Returns is the request method post
+	 *
+	 * @return bool
+	 */
+	public static function isPOST()
+	{
+		return self::getRequestMethod() === 'post';
+	}
+	
 	
 	/**
 	 * Get request method $_SERVER["REQUEST_METHOD"]
@@ -221,18 +349,7 @@ class Http
 	 */
 	public static function getRequestMethod()
 	{
-		return strtolower($_SERVER["REQUEST_METHOD"]);
-	}
-	
-	/**
-	 * Check is $_SERVER["REQUEST_METHOD"]
-	 *
-	 * @param string $method
-	 * @return bool
-	 */
-	public static function isRequestMethod(string $method)
-	{
-		return in_array(strtolower($_SERVER["REQUEST_METHOD"]), Variable::toArray($method));
+		return isset($_SERVER["REQUEST_METHOD"]) ? strtolower($_SERVER["REQUEST_METHOD"]) : null;
 	}
 	
 	/**
@@ -242,10 +359,10 @@ class Http
 	{
 		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
 		{
-			return TRUE;
+			return true;
 		}
 		
-		return FALSE;
+		return false;
 	}
 	
 	/**
@@ -254,7 +371,7 @@ class Http
 	 * @param string $link        - where to go
 	 * @param bool   $redirect301 - use header 301 to redirect
 	 */
-	public static function go(string $link = "", bool $redirect301 = FALSE)
+	public static function go(string $link = "", bool $redirect301 = false)
 	{
 		$link = str_replace('&amp;', '&', $link);
 		$llen = strlen($link) - 1;
@@ -264,9 +381,9 @@ class Http
 		}
 		if (!headers_sent())
 		{
-			if ($redirect301 == TRUE)
+			if ($redirect301 == true)
 			{
-				Header("HTTP/1.1 301 Moved Permanently", TRUE, 301);
+				Header("HTTP/1.1 301 Moved Permanently", true, 301);
 			}
 			header('Location: ' . $link);
 		}
@@ -284,7 +401,7 @@ class Http
 	 */
 	public static function go301(string $link)
 	{
-		self::go($link, 0, TRUE);
+		self::go($link, 0, true);
 	}
 	
 	/**
@@ -305,7 +422,7 @@ class Http
 	 */
 	public static function getReferer(): string
 	{
-		return (isset($_SERVER["HTTP_REFERER"])) ? $_SERVER["HTTP_REFERER"] : FALSE;
+		return (isset($_SERVER["HTTP_REFERER"])) ? $_SERVER["HTTP_REFERER"] : false;
 	}
 	
 	/**
@@ -315,7 +432,7 @@ class Http
 	 */
 	public static function getCurrentUrl(): string
 	{
-		$protocol = FALSE;
+		$protocol = false;
 		if (!$protocol)
 		{
 			$SiteUrl = 'http';
@@ -343,45 +460,43 @@ class Http
 	 *
 	 * @return String
 	 */
-	public static function getDomain()
+	public static function getHost()
 	{
 		return $_SERVER["HTTP_HOST"];
 	}
 	
 	//############################################################################################################# SOF Helpers
-	private static function getServerData($from)
-	{
-		if ($from == "get")
-		{
-			return $_GET;
-		}
-		elseif ($from == "post")
-		{
-			return $_POST;
-		}
-		elseif ($from == "file")
-		{
-			return $_FILES;
-		}
-		elseif ($from == "request")
-		{
-			return $_REQUEST;
-		}
-		throw new \Error("undefeind server data = " . $from);
-	}
 	
 	/**
-	 * Delete var from HTTP variable ($_GET,$_POST, $_REQUEST, $_FILES)
-	 *
-	 * @param string $name
-	 * @param string $from (get,post,request,file)
+	 * @param string $name does variable exists
+	 * @param string $from (get, post, request, file, server)
+	 * @return bool
 	 */
-	private static function delete($name, $from)
+	private static function existsVar(string $name, string $from)
 	{
-		$globVarName = self::getServerData($from);
-		if (isset($globVarName[$name]))
+		if ($from == 'get')
 		{
-			unset($globVarName[$name]);
+			return array_key_exists($name, $_GET);
+		}
+		elseif ($from === 'post')
+		{
+			return array_key_exists($name, $_POST);
+		}
+		elseif ($from == 'files')
+		{
+			return array_key_exists($name, $_FILES);
+		}
+		elseif ($from == 'request')
+		{
+			return array_key_exists($name, $_REQUEST);
+		}
+		elseif ($from == 'server')
+		{
+			return array_key_exists($name, $_SERVER);
+		}
+		else
+		{
+			throw new Error("unknown from");
 		}
 	}
 	
@@ -393,82 +508,148 @@ class Http
 	 * @param mixed  $default - default value on not found
 	 * @return variable on success, return false on unsuccess
 	 */
-	private static function getVar($name = NULL, $from, $default = NULL)
+	private static function getVar(string $name = self::UNDEFINED, $from, $default = null)
 	{
-		$value = "__UND_DEF__";
-		$data  = self::getServerData($from);
-		if ($name === NULL)
+		if ($from == 'get')
 		{
-			$value = $data;
+			return $name === self::UNDEFINED ? $_GET : (self::existsVar($name, $from) ? $_GET[$name] : $default);
+		}
+		elseif ($from === 'post')
+		{
+			return $name === self::UNDEFINED ? $_POST : (self::existsVar($name, $from) ? $_POST[$name] : $default);
+		}
+		elseif ($from == 'files')
+		{
+			return $name === self::UNDEFINED ? $_FILES : (self::existsVar($name, $from) ? $_FILES[$name] : $default);
+		}
+		elseif ($from == 'request')
+		{
+			return $name === self::UNDEFINED ? $_REQUEST : (self::existsVar($name, $from) ? $_REQUEST[$name] : $default);
+		}
+		elseif ($from == 'server')
+		{
+			return $name === self::UNDEFINED ? $_SERVER : (self::existsVar($name, $from) ? $_SERVER[$name] : $default);
 		}
 		else
 		{
-			if (isset($data[$name]))
-			{
-				$value = $data[$name];
-			}
+			throw new Error("unknown from");
 		}
-		if ($value === "__UND_DEF__")
-		{
-			$value = $default;
-		}
-		
-		return $value;
 	}
 	
 	/**
-	 * Set var and var value to HTTP variable
+	 * Set variable and variable value to HTTP variable
 	 *
-	 * @param $name
-	 * @param $value
-	 * @param $to - (get,post,files,request)
-	 * @return bool
+	 * @param string $name
+	 * @param string $to - (get,post,files,request)
+	 * @param mixed  $value
+	 * @return void
 	 */
-	private static function setVar($name, $to, $value = NULL)
+	private static function setVar(string $name, string $to, $value)
 	{
-		if ($name AND $value === NULL)
+		if ($to == 'get')
 		{
-			if ($to == "get")
-			{
-				$_GET = $name;
-			}
-			elseif ($to == "post")
-			{
-				$_POST = $name;
-			}
-			elseif ($to == "file")
-			{
-				$_FILES = $name;
-			}
-			elseif ($to == "request")
-			{
-				$_REQUEST = $name;
-			}
+			$_GET[$name] = $value;
 		}
-		else
+		elseif ($to == 'post')
 		{
-			if ($to == "get")
-			{
-				$_GET[$name] = $value;
-			}
-			elseif ($to == "post")
-			{
-				$_POST[$name] = $value;
-			}
-			elseif ($to == "file")
-			{
-				$_FILES[$name] = $value;
-			}
-			elseif ($to == "request")
-			{
-				$_REQUEST[$name] = $value;
-			}
+			$_POST[$name] = $value;
+		}
+		elseif ($to == 'files')
+		{
+			$_FILES[$name] = $value;
+		}
+		elseif ($to == 'request')
+		{
+			$_REQUEST[$name] = $value;
+		}
+		elseif ($to == 'server')
+		{
+			$_SERVER[$name] = $value;
 		}
 	}
 	
-	private static function doFlush(string $from)
+	/**
+	 * Delete variable from HTTP variable
+	 *
+	 * @param string $name
+	 * @param string $from (get, post, request, file, server)
+	 */
+	private static function deleteVar(string $name, string $from)
 	{
-		self::setVar(FALSE, $from, NULL);
+		if ($from == 'get')
+		{
+			if (array_key_exists($name, $_GET))
+			{
+				unset($globVarName[$name]);
+			}
+		}
+		elseif ($from === 'post')
+		{
+			if (array_key_exists($name, $_POST))
+			{
+				unset($globVarName[$name]);
+			}
+		}
+		elseif ($from == 'files')
+		{
+			if (array_key_exists($name, $_FILES))
+			{
+				unset($globVarName[$name]);
+			}
+		}
+		elseif ($from == 'request')
+		{
+			if (array_key_exists($name, $_REQUEST))
+			{
+				unset($globVarName[$name]);
+			}
+		}
+		elseif ($from == 'server')
+		{
+			throw new Error("cant delete server variable");
+		}
+		else
+		{
+			throw new Error("unknown from");
+		}
+		
+		return true;
+	}
+	
+	
+	/**
+	 * @param string $from (get, post, request, file, server)
+	 * @param array  $replaceWith
+	 * @return bool
+	 */
+	private static function flushVariable(string $from, array $replaceWith = [])
+	{
+		if ($from == 'get')
+		{
+			$_GET = $replaceWith;
+		}
+		elseif ($from == 'post')
+		{
+			$_POST = $replaceWith;
+		}
+		elseif ($from == 'files')
+		{
+			$_FILES = $replaceWith;
+		}
+		elseif ($from == 'request')
+		{
+			$_REQUEST = $replaceWith;
+		}
+		elseif ($from == 'server')
+		{
+			throw new Error("cant flush server variable");
+		}
+		else
+		{
+			throw new Error("unknown from");
+		}
+		
+		return true;
 	}
 }
 
