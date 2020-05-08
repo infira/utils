@@ -580,28 +580,28 @@ class Http
 		{
 			if (array_key_exists($name, $_GET))
 			{
-				unset($globVarName[$name]);
+				unset($_GET[$name]);
 			}
 		}
 		elseif ($from === 'post')
 		{
 			if (array_key_exists($name, $_POST))
 			{
-				unset($globVarName[$name]);
+				unset($_POST[$name]);
 			}
 		}
 		elseif ($from == 'files')
 		{
 			if (array_key_exists($name, $_FILES))
 			{
-				unset($globVarName[$name]);
+				unset($_FILES[$name]);
 			}
 		}
 		elseif ($from == 'request')
 		{
 			if (array_key_exists($name, $_REQUEST))
 			{
-				unset($globVarName[$name]);
+				unset($_REQUEST[$name]);
 			}
 		}
 		elseif ($from == 'server')
