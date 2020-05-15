@@ -94,7 +94,6 @@ class Dir
 	 */
 	public static function getContents(string $path, $exlude = [], bool $recursive = FALSE, bool $absolutePath = FALSE): array
 	{
-		set_time_limit(3);
 		$exlude   = Variable::toArray($exlude);
 		$exlude[] = ".";
 		$exlude[] = "..";

@@ -387,8 +387,6 @@ class File
 	 */
 	public static function download($fileUrl, $saveTo)
 	{
-		set_time_limit(3600); // unlimited max execution time
-		
 		return file_put_contents($saveTo, self::getContent($fileUrl));
 	}
 }
