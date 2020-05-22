@@ -26,7 +26,7 @@ class Fix
 	 * @param string $string
 	 * @return string
 	 */
-	public static function br($string, $isXHTML = TRUE)
+	public static function br($string, $isXHTML = true)
 	{
 		$br = ($isXHTML) ? "<br />" : "<br>";
 		
@@ -41,9 +41,9 @@ class Fix
 	 *            - is XHTML "<br />" used only in PHP 5.3.x
 	 * @return string
 	 */
-	public static function nl2br($string, $isXHTML = TRUE, $fixBr = NULL)
+	public static function nl2br($string, $isXHTML = true, $fixBr = null)
 	{
-		if ($fixBr !== NULL)
+		if ($fixBr !== null)
 		{
 			$string = self::br($string, $isXHTML);
 		}
@@ -90,7 +90,7 @@ class Fix
 	 * @param string $with
 	 *            mysql - mysqli_escape_string int - intval float - floatval bool - ($value) ? true : false string - "$value"; arratint - fix array values with intval
 	 */
-	public static function valueWith($value, $with = FALSE)
+	public static function valueWith($value, $with = false)
 	{
 		if ($with)
 		{
@@ -121,7 +121,7 @@ class Fix
 							$value = Variable::toNumber($value);
 						break;
 						case "bool" :
-							$value = ($value) ? TRUE : FALSE;
+							$value = ($value) ? true : false;
 						break;
 						case "boolInt" :
 							$value = ($value) ? 1 : 0;
@@ -319,7 +319,7 @@ class Fix
 			$s = "";
 			if (defined("HTTPS_ENABLED"))
 			{
-				if (HTTPS_ENABLED == TRUE)
+				if (HTTPS_ENABLED == true)
 				{
 					$s = "s";
 				}
@@ -337,7 +337,7 @@ class Fix
 	 * @param numeric $price
 	 * @param bool    $removeTenth
 	 */
-	public static function price($price, $removeTenth = TRUE, $removeZeros = FALSE)
+	public static function price($price, $removeTenth = true, $removeZeros = false)
 	{
 		$price = number_format($price, 2, ',', '');
 		if ($removeZeros)
@@ -424,29 +424,48 @@ class Fix
 	/**
 	 * Add slash to end if neccessary
 	 */
-	public static function phone($phone, $prefix = "")
+	/**
+	 * @param        $phone
+	 * @param string $countryCode
+	 * @param array  $allowedCountryCodes - https://countrycode.org/
+	 * @return string|string[]|null
+	 */
+	public static function phone($phone, $countryCode = '', $possibleCountryCodes = [])
 	{
-		$phone  = trim((string)$phone);
-		$prefix = trim((string)$prefix);
+		set_time_limit(10);
+		$phone       = trim((string)$phone);
+		$countryCode = trim((string)$countryCode);
 		if (strlen($phone) > 0)
 		{
-			$phone = preg_replace('/\s+/', '', $phone);
-			$phone = preg_replace("/[^0-9]/", "", $phone);
-			if ($prefix)
+			$tmpPhone    = $phone;
+			$phone       = preg_replace("/[^0-9]/", "", $phone);
+			$countryCode = preg_replace("/[^0-9]/", "", $countryCode);
+			
+			if (!empty($countryCode))
 			{
-				if ($prefix{0} == "+")
+				if (!in_array($countryCode, $possibleCountryCodes))
 				{
-					$prefix = substr($prefix, 1);
+					$possibleCountryCodes = array_merge([$countryCode], $possibleCountryCodes);
 				}
-				if (substr($phone, 0, strlen($prefix)) == $prefix)
+				foreach ($possibleCountryCodes as $cc)
 				{
-					return "+" . $phone;
+					$pl = strlen($cc);
+					if (substr($phone, 0, $pl) == $cc)
+					{
+						$phone = substr($phone, $pl);
+					}
 				}
-				else
+				$phone = "+" . $countryCode . $phone;
+			}
+			else
+			{
+				if ($tmpPhone{0} == "+")
 				{
-					$phone = "+" . $prefix . $phone;
+					$phone = "+" . $countryCode . $phone;
 				}
 			}
+			
+			return $phone;
 		}
 		
 		return $phone;
