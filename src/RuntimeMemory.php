@@ -7,7 +7,7 @@ namespace Infira\Utils;
  * @method static void set(string $key, mixed $value) Set new value
  * @method static void add(mixed $value) Append new view
  * @method static void append(mixed $value) Append new view
- * @method static mixed get(string $key, mixed $returnOnNotFound) get value
+ * @method static mixed get(string $key, mixed $returnOnNotFound = null) get value
  * @method static array getAll() get all values
  * @method static void delete(string $key) delete item
  * @method static mixed once(string|array $key, callable $callback) delete item
