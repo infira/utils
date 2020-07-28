@@ -422,14 +422,8 @@ function exception($msg)
  * @param string $name
  * @return Profiler
  */
-function Prof(string $name = null)
+function Prof(string $name = "globalProfiler")
 {
-	if ($name === null)
-	{
-		global $Profiler;
-		
-		return $Profiler;
-	}
 	if (!isset($GLOBALS["infira_profilers"][$name]))
 	{
 		$GLOBALS["infira_profilers"][$name] = new \Infira\Utils\Profiler();
