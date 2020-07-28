@@ -432,7 +432,7 @@ function Prof(string $name = null)
 	}
 	if (!isset($GLOBALS["infira_profilers"][$name]))
 	{
-		$GLOBALS["infira_profilers"][$name] = new Profiler();
+		$GLOBALS["infira_profilers"][$name] = new \Infira\Utils\Profiler();
 	}
 	
 	return $GLOBALS["infira_profilers"][$name];
