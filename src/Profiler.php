@@ -337,24 +337,4 @@ class Profiler
 	}
 }
 
-/**
- * @param string $name
- * @return Profiler
- */
-function Prof(string $name = null)
-{
-	if ($name === null)
-	{
-		global $Profiler;
-		
-		return $Profiler;
-	}
-	if (!isset($GLOBALS["infira_profilers"][$name]))
-	{
-		$GLOBALS["infira_profilers"][$name] = new Profiler();
-	}
-	
-	return $GLOBALS["infira_profilers"][$name];
-}
-
 ?>
