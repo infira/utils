@@ -3,13 +3,19 @@
 namespace Infira\Utils;
 /**
  * TempController
+ * @method static string getName() Get collection name
  * @method static bool exists(string $key) Does key exists
- * @method static void set(string $key, mixed $value) Set new value
+ * @method static void set(string $key, mixed $value) Set new item
  * @method static void add(mixed $value) Append new view
  * @method static void append(mixed $value) Append new view
- * @method static mixed get(string $key, mixed $returnOnNotFound = null) get value
- * @method static array getAll() get all values
- * @method static void delete(string $key) delete item
+ * @method static mixed get(string $key, mixed $returnOnNotFound = null) Get item, if not found $returnOnNotFound will be returned
+ * @method static bool delete(string $key) delete item
+ * @method static array getItems() get all values
+ * @method static array getTree() get all items and sub collections
+ * @method static void each(callable $callback) Call $callback for every item in current collection<br /> $callback($Colleciton, $collectionName)
+ * @method static void eachTree(callable $callback) Call $callback for every sub collection every item<br />$callback($itemValue, $itemName, $collecitonName)
+ * @method static void eachCollection(callable $callback) Call $callback for every sub collection<br />$callback($Colleciton, $collectionName)
+ * @method static array getCollections() get all sub collections
  * @method static mixed once(string|array $key, callable $callback) delete item
  * @method static mixed onceForce(string|array $key, bool $forceset, callable $callback) delete item
  */
@@ -19,13 +25,13 @@ class RuntimeMemory
 	
 	/**
 	 * @param string $key - collection name
-	 * @return __RuntimeMemoryData
+	 * @return \Infira\Utils\RuntimeMemoryCollection
 	 */
-	public static function Collection(string $key): __RuntimeMemoryData
+	public static function Collection(string $key): \Infira\Utils\RuntimeMemoryCollection
 	{
 		if (!isset(self::$collections[$key]))
 		{
-			self::$collections[$key] = new __RuntimeMemoryData();
+			self::$collections[$key] = new \Infira\Utils\RuntimeMemoryCollection($key);
 		}
 		
 		return self::$collections[$key];
@@ -33,28 +39,45 @@ class RuntimeMemory
 	
 	public static function __callStatic(string $method, array $args)
 	{
-		return self::Collection("genedral")->$method(...$args);
+		return self::Collection('general')->$method(...$args);
 	}
 }
 
-final class __RuntimeMemoryData
+final class RuntimeMemoryCollection
 {
-	private static $collections = [];
+	private $collections = [];
 	
 	private $data = [];
 	
-	/**
-	 * @param string $key - collection name
-	 * @return __RuntimeMemoryData
-	 */
-	public static function Collection(string $key): __RuntimeMemoryData
+	private $name;
+	
+	public function __construct(string $mainName)
 	{
-		if (!isset(self::$collections[$key]))
+		$this->name = $mainName;
+	}
+	
+	/**
+	 * @param string $name - collection name
+	 * @return \Infira\Utils\RuntimeMemoryCollection
+	 */
+	public function Collection(string $name): \Infira\Utils\RuntimeMemoryCollection
+	{
+		if (!isset($this->collections[$name]))
 		{
-			self::$collections[$key] = new __RuntimeMemoryData();
+			$this->collections[$name] = new \Infira\Utils\RuntimeMemoryCollection($name);
 		}
 		
-		return self::$collections[$key];
+		return $this->collections[$name];
+	}
+	
+	/**
+	 * Returns collection name
+	 *
+	 * @return string
+	 */
+	public function getName(): string
+	{
+		return $this->name;
 	}
 	
 	/**
@@ -69,7 +92,7 @@ final class __RuntimeMemoryData
 	}
 	
 	/**
-	 * Set by key
+	 * Set new item
 	 *
 	 * @param string $key
 	 * @param mixed  $value
@@ -81,7 +104,7 @@ final class __RuntimeMemoryData
 	}
 	
 	/**
-	 * Add new new value
+	 * Add new new item
 	 *
 	 * @param mixed $value
 	 * @return void
@@ -103,7 +126,7 @@ final class __RuntimeMemoryData
 	}
 	
 	/**
-	 * Get item by key
+	 * Get item, if not found $returnOnNotFound will be returned
 	 *
 	 * @param string $key
 	 * @param mixed  $returnOnNotFound - if not found then that is returned
@@ -117,16 +140,6 @@ final class __RuntimeMemoryData
 		}
 		
 		return $this->data[$key];
-	}
-	
-	/**
-	 * get all items
-	 *
-	 * @return array
-	 */
-	public function getAll(): array
-	{
-		return $this->data;
 	}
 	
 	/**
@@ -146,98 +159,172 @@ final class __RuntimeMemoryData
 	}
 	
 	/**
+	 * get all items
+	 *
+	 * @return array
+	 */
+	public function getItems(): array
+	{
+		return $this->data;
+	}
+	
+	/**
+	 * Get current collection tree
+	 * array(
+	 *  array
+	 *  (
+	 *      [collections] => array
+	 *      (
+	 *          [collection1] => array
+	 *          (
+	 *              [collections] => array(...)
+	 *              [items] => array(...)
+	 *          )
+	 *      )
+	 *      [items] => array
+	 *      (
+	 *          "item1"=>"item value",
+	 *          "item2"=>"item2 value"
+	 *      )
+	 *      .....
+	 *  )
+	 */
+	public function getTree(): array
+	{
+		$data = ['collections' => []];
+		$this->eachCollection(function ($Collection, $collectionName) use (&$data)
+		{
+			$data['collections'][$collectionName] = ['collections' => [], 'items' => $Collection->getItems()];
+			$tree                                 = $Collection->getTree();
+			if ($tree['collections'])
+			{
+				$data['collections'][$collectionName]['collections'] = $tree['collections'];
+			}
+		});
+		$data['items'] = $this->getItems();
+		
+		return $data;
+	}
+	
+	/**
+	 * Call $callback for every item in current collection<br />$callback($Colleciton,$collectionName)
+	 *
+	 * @return void
+	 */
+	public function each(callable $callback): void
+	{
+		foreach ($this->data as $name => $value)
+		{
+			call_user_func_array($callback, [$value, $name]);
+		}
+	}
+	
+	/**
+	 * Call $callback for every sub collection every item<br />$callback($itemValue,$itemName,$collecitonName)
+	 *
+	 * @return void
+	 */
+	public function eachTree(callable $callback): void
+	{
+		foreach ($this->data as $name => $value)
+		{
+			call_user_func_array($callback, [$value, $name, $this->name]);
+		}
+		foreach ($this->collections as $name => $Collection)
+		{
+			$Collection->eachTree($callback);
+		}
+	}
+	
+	/**
+	 * Call $callback for every sub collection<br />$callback($Colleciton,$collectionName)
+	 *
+	 * @return void
+	 */
+	public function eachCollection(callable $callback): void
+	{
+		foreach ($this->collections as $name => $Collection)
+		{
+			call_user_func_array($callback, [$Collection, $name]);
+		}
+	}
+	
+	/**
 	 * Get all current collections
 	 *
 	 * @return array
 	 */
-	public static function getCollections(): array
+	public function getCollections(): array
 	{
-		return self::$collections;
-	}
-	
-	private static function multiImplode($glue, $array)
-	{
-		$ret = '';
-		
-		foreach ($array as $item)
-		{
-			if (is_array($item))
-			{
-				$ret .= self::multiImplode($glue, $item) . $glue;
-			}
-			else
-			{
-				$ret .= $item . $glue;
-			}
-		}
-		
-		$ret = substr($ret, 0, 0 - strlen($glue));
-		
-		return $ret;
+		return $this->collections;
 	}
 	
 	/**
-	 * Call $callback once per cache existance, result will be seted to cache
-	 * all argumetns expect last is used to generate cacheID
-	 * last argument must be callable $callback
+	 * Make unique cacheID
 	 *
-	 * @return string - cacheID
+	 * @param mixed $key
+	 * @return string
 	 */
-	public function once()
+	private function genCacheID($key): string
 	{
-		$args = func_get_args();
-		if (count($args) < 2)
+		if (is_object($key))
 		{
-			throw new \Error("at least 2 arguments ms be defined");
+			if (!$key instanceof \stdClass)
+			{
+				throw new \Error("cannot make cache ID from non stdClass object, its impact for performance");
+			}
+			$key = serialize($key);
 		}
-		$callback = end($args);
-		if (!is_callable($callback))
+		elseif (is_array($key))
 		{
-			throw new \Error("Last argument must be callable");
+			$key = serialize($key);
 		}
-		$params = array_slice($args, 0, -1);
-		$CID    = hash("crc32b", self::multiImplode(";", $params));
+		
+		return hash("crc32b", $key);
+	}
+	
+	/**
+	 * Call $callback once per $key existence
+	 * All arguments after  $callback will be passed to callable method
+	 *
+	 * @param          $key
+	 * @param callable $callback      method result will be setted to memory for later use
+	 * @param mixed    $callbackArg1  -
+	 * @param mixed    $callbackArg2  -
+	 * @param mixed    $callbackArg3  -
+	 * @param mixed    $callbackArg_n -
+	 * @return mixed - $callback result
+	 */
+	public function once($key, callable $callback)
+	{
+		$CID = self::genCacheID($key);
 		if (!$this->exists($CID))
 		{
-			$this->set($CID, call_user_func_array($callback, $params));
+			$this->set($CID, call_user_func_array($callback, array_slice(func_get_args(), 2)));
 		}
 		
 		return $this->get($CID);
 	}
 	
 	/**
-	 * Call $callback once per cache existance, result will be seted to cache
-	 * all argumetns expect 2 last is used to generate cacheID
-	 * last argument must be callable $callback
-	 * 1 before last is bool $forceSet to force call $callback either exists or not in the cache
+	 * Call $callback once per $key existence or force it to call
+	 * All arguments after  $forceSet will be passed to callable method
 	 *
-	 * @return string - cacheID
+	 * @param mixed    $key
+	 * @param callable $callback
+	 * @param bool     $forceSet      - if its true then $callback will be called regardless of is the $key setted or not
+	 * @param mixed    $callbackArg1  -
+	 * @param mixed    $callbackArg2  -
+	 * @param mixed    $callbackArg3  -
+	 * @param mixed    $callbackArg_n -
+	 * @return mixed|null - $callback result
 	 */
-	public function onceForce()
+	public function onceForce($key, callable $callback, bool $forceSet = false)
 	{
-		$args  = func_get_args();
-		$count = count($args);
-		if ($count < 3)
-		{
-			throw new \Error("at least 3 arguments ms be defined");
-		}
-		$i        = $count - 1;
-		$callback = $args[$i];
-		if (!is_callable($callback))
-		{
-			throw new \Error("Last argument must be callable");
-		}
-		$i--;
-		$forceSet = $args[$i];
-		if (!is_bool($forceSet))
-		{
-			throw new \Error('Argument before last($forceSet) must be boolean');
-		}
-		$params = array_slice($args, 0, -1);
-		$CID    = hash("crc32b", self::multiImplode(";", $params));
+		$CID = $this->genCacheID($key);
 		if (!$this->exists($CID))
 		{
-			$this->set($CID, call_user_func_array($callback, $params));
+			$this->set($CID, call_user_func_array($callback, array_slice(func_get_args(), 3)));
 		}
 		
 		return $this->get($CID);
