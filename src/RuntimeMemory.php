@@ -18,6 +18,7 @@ namespace Infira\Utils;
  * @method static array getCollections() get all sub collections
  * @method static mixed once(string|array $key, callable $callback) delete item
  * @method static mixed onceForce(string|array $key, bool $forceset, callable $callback) delete item
+ * @method static bool flush() - Flush current data and collections
  */
 class RuntimeMemory
 {
@@ -307,6 +308,19 @@ final class RuntimeMemoryCollection
 		}
 		
 		return $this->get($CID);
+	}
+	
+	/**
+	 * Flush current data and collections
+	 *
+	 * @return bool
+	 */
+	public function flush(): bool
+	{
+		$this->collections = [];
+		$this->data        = [];
+		
+		return true;
 	}
 }
 
