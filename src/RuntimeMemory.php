@@ -12,9 +12,9 @@ namespace Infira\Utils;
  * @method static bool delete(string $key) delete item
  * @method static array getItems() get all values
  * @method static array getTree() get all items and sub collections
- * @method static void each(callable $callback) Call $callback for every item in current collection<br /> $callback($Colleciton, $collectionName)
- * @method static void eachTree(callable $callback) Call $callback for every sub collection every item<br />$callback($itemValue, $itemName, $collecitonName)
- * @method static void eachCollection(callable $callback) Call $callback for every sub collection<br />$callback($Colleciton, $collectionName)
+ * @method static void each(callable $callback) Call $callback for every item in current collection<br /> $callback($itemValue, $itemName)
+ * @method static void eachTree(callable $callback) Call $callback for every collection, sub collection and every item<br />$callback($itemValue, $itemName, $collecitonName)
+ * @method static void eachCollection(callable $callback) Call $callback for every collection<br />$callback($Colleciton, $collectionName)
  * @method static array getCollections() get all sub collections
  * @method static mixed once(string|array $key, callable $callback) delete item
  * @method static mixed onceForce(string|array $key, bool $forceset, callable $callback) delete item
@@ -207,21 +207,23 @@ final class RuntimeMemoryCollection
 	}
 	
 	/**
-	 * Call $callback for every item in current collection<br />$callback($Colleciton,$collectionName)
+	 * Call $callback for every item in current collection<br />$callback($itemValue,$itemName)
 	 *
+	 * @param callable $callback
 	 * @return void
 	 */
 	public function each(callable $callback): void
 	{
-		foreach ($this->data as $name => $value)
+		foreach ($this->data as $key => $value)
 		{
-			call_user_func_array($callback, [$value, $name]);
+			call_user_func_array($callback, [$value, $key]);
 		}
 	}
 	
 	/**
-	 * Call $callback for every sub collection every item<br />$callback($itemValue,$itemName,$collecitonName)
+	 * Call $callback for every collection, sub collection and every item<br />$callback($itemValue,$itemName,$collecitonName)
 	 *
+	 * @param callable $callback
 	 * @return void
 	 */
 	public function eachTree(callable $callback): void
@@ -237,8 +239,9 @@ final class RuntimeMemoryCollection
 	}
 	
 	/**
-	 * Call $callback for every sub collection<br />$callback($Colleciton,$collectionName)
+	 * Call $callback for every collection<br />$callback($Colleciton,$collectionName)
 	 *
+	 * @param callable $callback
 	 * @return void
 	 */
 	public function eachCollection(callable $callback): void
@@ -260,44 +263,20 @@ final class RuntimeMemoryCollection
 	}
 	
 	/**
-	 * Make unique cacheID
-	 *
-	 * @param mixed $key
-	 * @return string
-	 */
-	private function genCacheID($key): string
-	{
-		if (is_object($key))
-		{
-			if (!$key instanceof \stdClass)
-			{
-				throw new \Error("cannot make cache ID from non stdClass object, its impact for performance");
-			}
-			$key = serialize($key);
-		}
-		elseif (is_array($key))
-		{
-			$key = serialize($key);
-		}
-		
-		return hash("crc32b", $key);
-	}
-	
-	/**
 	 * Call $callback once per $key existence
 	 * All arguments after  $callback will be passed to callable method
 	 *
-	 * @param          $key
-	 * @param callable $callback      method result will be setted to memory for later use
-	 * @param mixed    $callbackArg1  -
-	 * @param mixed    $callbackArg2  -
-	 * @param mixed    $callbackArg3  -
-	 * @param mixed    $callbackArg_n -
+	 * @param string|array|int $key
+	 * @param callable         $callback      method result will be setted to memory for later use
+	 * @param mixed            $callbackArg1  -
+	 * @param mixed            $callbackArg2  -
+	 * @param mixed            $callbackArg3  -
+	 * @param mixed            $callbackArg_n -
 	 * @return mixed - $callback result
 	 */
 	public function once($key, callable $callback)
 	{
-		$CID = self::genCacheID($key);
+		$CID = Gen::cacheID($key);
 		if (!$this->exists($CID))
 		{
 			$this->set($CID, call_user_func_array($callback, array_slice(func_get_args(), 2)));
@@ -310,19 +289,19 @@ final class RuntimeMemoryCollection
 	 * Call $callback once per $key existence or force it to call
 	 * All arguments after  $forceSet will be passed to callable method
 	 *
-	 * @param mixed    $key
-	 * @param callable $callback
-	 * @param bool     $forceSet      - if its true then $callback will be called regardless of is the $key setted or not
-	 * @param mixed    $callbackArg1  -
-	 * @param mixed    $callbackArg2  -
-	 * @param mixed    $callbackArg3  -
-	 * @param mixed    $callbackArg_n -
+	 * @param string|array|int $key
+	 * @param callable         $callback
+	 * @param bool             $forceSet      - if its true then $callback will be called regardless of is the $key setted or not
+	 * @param mixed            $callbackArg1  -
+	 * @param mixed            $callbackArg2  -
+	 * @param mixed            $callbackArg3  -
+	 * @param mixed            $callbackArg_n -
 	 * @return mixed|null - $callback result
 	 */
 	public function onceForce($key, callable $callback, bool $forceSet = false)
 	{
-		$CID = $this->genCacheID($key);
-		if (!$this->exists($CID))
+		$CID = Gen::cacheID($key);
+		if (!$this->exists($CID) or $forceSet == true)
 		{
 			$this->set($CID, call_user_func_array($callback, array_slice(func_get_args(), 3)));
 		}

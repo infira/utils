@@ -10,7 +10,7 @@ class Regex
 	 * @param bool   $returnOnFalse - return that if not found
 	 * @return mixed
 	 */
-	public static function getMatches(string $regex, string $subject, $returnOnFalse = FALSE)
+	public static function getMatches(string $regex, string $subject, $returnOnFalse = false)
 	{
 		if (preg_match($regex, $subject))
 		{
@@ -34,7 +34,7 @@ class Regex
 	 * @param bool   $returnOnFalse
 	 * @return mixed
 	 */
-	public static function getMatch(string $regex, string $subject, int $nr = 0, $returnOnFalse = FALSE)
+	public static function getMatch(string $regex, string $subject, int $nr = 0, $returnOnFalse = false)
 	{
 		$matches = self::getMatches($regex, $subject);
 		if (is_array($matches) and count($matches) > 0)
@@ -62,11 +62,11 @@ class Regex
 		{
 			if (isset($matches[0]))
 			{
-				return TRUE;
+				return true;
 			}
 		}
 		
-		return FALSE;
+		return false;
 	}
 	
 	/**
@@ -77,9 +77,7 @@ class Regex
 	 */
 	public static function is(string $str): bool
 	{
-		$regex = "/^\/[\s\S]+\/$/";
-		
-		return (preg_match($regex, $str)) ? TRUE : FALSE;
+		return (preg_match('/^\/.+\/[a-z]*$/i', $str)) ? true : false;
 	}
 	
 	/**

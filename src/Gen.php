@@ -19,7 +19,7 @@ class Gen
 		return str_repeat("0", ($length - strlen($documentID))) . "" . $documentID;
 	}
 	
-	public static function UUID($hashIT = FALSE)
+	public static function UUID($hashIT = false)
 	{
 		$uid = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',        // 32 bits for
 			// "time_low"
@@ -54,7 +54,7 @@ class Gen
 	 * @param bool $norepeat - characates cannot be repeated
 	 * @return string
 	 */
-	public static function randomString(int $len, bool $norepeat = TRUE)
+	public static function randomString(int $len, bool $norepeat = true)
 	{
 		$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		$max   = strlen($chars) - 1;
@@ -74,7 +74,7 @@ class Gen
 			{
 				if (!array_key_exists($picked, $rand_chars))
 				{
-					$rand_chars[$picked] = TRUE;
+					$rand_chars[$picked] = true;
 					$len--;
 				}
 			}
@@ -95,7 +95,8 @@ class Gen
 	 */
 	public static function cacheID()
 	{
-		return md5(self::cacheString(func_get_args()));
+		//return md5(self::cacheString(func_get_args()));
+		return hash("crc32b", self::cacheString(func_get_args()));
 	}
 	
 	/**
@@ -104,46 +105,26 @@ class Gen
 	 * @param string|array $key
 	 * @return string
 	 */
-	public static function cacheString($key, $arg1 = NULL)
+	public static function cacheString($key, $arg1 = null): string
 	{
 		if ($arg1)
 		{
 			throw new \Error("Cannot use multiple arguments");//cause get_func_args() causes performance issues
 		}
-		if (!is_array($key))
+		if (is_object($key))
 		{
-			$arr = [$key];
-		}
-		else
-		{
-			$arr = $key;
-		}
-		$CID = [];
-		if (checkArray($arr))
-		{
-			foreach ($arr as $key => $val)
+			if (!$key instanceof \stdClass)
 			{
-				if (is_bool($val))
-				{
-					$val = ($val == TRUE) ? "true" : "false";
-				}
-				elseif (is_object($val))
-				{
-					if (!Is::isClass($val, "stdClass"))
-					{
-						throw new \Error("cant convert object to array, must be stdClss");
-					}
-					$val = self::cacheString(Variable::toArray($val));
-				}
-				elseif (is_array($val))
-				{
-					$val = self::cacheString($val);
-				}
-				$CID[] = $key . "-" . $val;
+				throw new \Error("cannot make cache ID from non stdClass object, its impact for performance");
 			}
+			$key = serialize($key);
+		}
+		elseif (is_array($key))
+		{
+			$key = serialize($key);
 		}
 		
-		return trim(preg_replace('/\s+/', ' ', join(";", $CID)));
+		return $key;
 	}
 	
 	public static function htmlParams($string)

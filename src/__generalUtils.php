@@ -410,17 +410,27 @@ function error(string $msg)
 /**
  * Alias to throw new exeption
  *
- * @param $msg
+ * @param string $msg
  * @throws Exception
  */
-function exception($msg)
+function exception(string $msg)
 {
 	throw new \Exception($msg);
 }
 
 /**
+ * Sleep for milliseconds
+ *
+ * @param int $milliseconds
+ */
+function sleepmm(int $milliseconds)
+{
+	usleep($milliseconds * 1000);
+}
+
+/**
  * @param string $name
- * @return Profiler
+ * @return \Infira\Utils\Profiler()
  */
 function Prof(string $name = "globalProfiler")
 {

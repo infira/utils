@@ -87,7 +87,7 @@ class Profiler
 		$this->trace       = "";
 		$this->count       = [];
 		$this->running     = [];
-		$this->initTime    = $this->getMicroTime();
+		$this->initTime    = microtime(true);
 	}
 	
 	/**
@@ -139,7 +139,7 @@ class Profiler
 			$this->trace .= "start   $name\n";
 			$n           = array_push($this->stack, $this->cur_timer);
 			$this->suspendTimer($this->stack[$n - 1]);
-			$this->startTime[$name]   = $this->getMicroTime();
+			$this->startTime[$name]   = microtime(true);
 			$this->cur_timer          = $name;
 			$this->description[$name] = $desc;
 			if (!array_key_exists($name, $this->count))
@@ -165,7 +165,7 @@ class Profiler
 		if (!$this->isVoided())
 		{
 			$this->trace          .= "stop    $name\n";
-			$this->endTime[$name] = $this->getMicroTime();
+			$this->endTime[$name] = microtime(true);
 			if (!array_key_exists($name, $this->running))
 			{
 				$this->running[$name] = $this->elapsedTime($name);
@@ -183,9 +183,9 @@ class Profiler
 	 * measure the elapsed time of a timer without stoping the timer if
 	 *
 	 * @param string $name
-	 * @return int
+	 * @return float
 	 */
-	public function elapsedTime(string $name): int
+	public function elapsedTime(string $name): float
 	{
 		// This shouldn't happen, but it does once.
 		if (!array_key_exists($name, $this->startTime))
@@ -199,12 +199,11 @@ class Profiler
 		}
 		else
 		{
-			$now = $this->getMicroTime();
+			$now = microtime(true);
 			
 			return ($now - $this->startTime[$name]);
 		}
 	}
-	
 	
 	/**
 	 * Get html timers HTML
@@ -213,12 +212,12 @@ class Profiler
 	 */
 	public function dumpTimers(): string
 	{
-		$TimedTotal = 0;
-		$tot_perc   = 0;
+		$allTotal = 0;
+		$tot_perc = 0;
 		ksort($this->description);
 		$return = "";
 		$return .= '<pre class="profiler">';
-		$oaTime = $this->getMicroTime() - $this->initTime;
+		$oaTime = microtime(true) - $this->initTime;
 		
 		$return .= '<div style="clear:both;height:1px;font-size:1px;border:none;background:transparent;"></div>';
 		$return .= "============================================================================\n";
@@ -231,18 +230,16 @@ class Profiler
 		foreach ($this->description as $key => $val)
 		{
 			$nr++;
-			$t          = $this->elapsedTime($key);
-			$total      = $this->running[$key];
-			$count      = $this->count[$key];
-			$TimedTotal += $total;
-			$perc       = ($total / $oaTime) * 100;
-			$tot_perc   += $perc;
-			//$return .= $nr."    ". sprintf( "%3d    %3.6f s (%3.2f %%)  %s\n", $count, $total, $perc, $key);
+			$total    = $this->running[$key];
+			$allTotal += $total;
+			$count    = $this->count[$key];
+			$perc     = ($total / $oaTime) * 100;
+			$tot_perc += $perc;
 			if (strpos($key, 'function'))
 			{
 				$key = '<strong style="color:#CC0000">' . $key . '</strong>';
 			}
-			$list[] = ['nr' => $nr, 'calls' => sprintf("%3d", $count), 'time' => sprintf("%3.4f", $total), 'percent' => sprintf("%3.3f", $perc), 'name' => $key];
+			$list[] = ['nr' => $nr, 'calls' => sprintf("%3d", $count), 'time' => $total, 'percent' => sprintf("%3.2f", $perc), 'name' => $key];
 		}
 		$this->orderByField($list, 'percent', true);
 		$return .= '<style>
@@ -262,7 +259,7 @@ class Profiler
 			$return .= '<tr style="background-color:#FFFFFF">';
 			$return .= '<td> ' . $nr . ' </td>';
 			$return .= '<td> ' . $val['calls'] . ' </td>';
-			$return .= '<td> ' . $val['time'] . ' </td>';
+			$return .= '<td> ' . sprintf("%3.6f", $val['time']) . ' </td>';
 			$return .= '<td> ' . $val['percent'] . ' </td>';
 			$return .= '<td> ' . $val['name'] . ' </td>';
 			$return .= '</tr>';
@@ -272,15 +269,15 @@ class Profiler
 		
 		$return .= "\n";
 		
-		$missed   = $oaTime - $TimedTotal;
+		$missed   = $oaTime - $allTotal;
 		$perc     = ($missed / $oaTime) * 100;
 		$tot_perc += $perc;
 		// $perc=sprintf("%3.2f", $perc );
-		$return .= sprintf("       %3.6f s (%3.2f %%)  %s\n", $missed, $perc, "Missed");
+		$return .= sprintf("       %3.4fs (%3.2f%%)  %s\n", $missed, $perc, "Missed");
 		
 		$return .= "============================================================================\n";
 		
-		$return .= sprintf("       %3.6f s (%3.2f %%)  %s\n", $oaTime, $tot_perc, "OVERALL TIME");
+		$return .= sprintf("       %3.4fs (%3.2f%%)  %s\n", $oaTime, $tot_perc, "OVERALL TIME");
 		
 		$return .= "============================================================================\n";
 		$return .= "</pre>";
@@ -313,7 +310,7 @@ class Profiler
 	private function resumeTimer(string $name): void
 	{
 		$this->trace            .= "resume  $name\n";
-		$this->startTime[$name] = $this->getMicroTime();
+		$this->startTime[$name] = microtime(true);
 	}
 	
 	/**
@@ -325,7 +322,7 @@ class Profiler
 	private function suspendTimer(string $name): void
 	{
 		$this->trace          .= "suspend $name\n";
-		$this->endTime[$name] = $this->getMicroTime();
+		$this->endTime[$name] = microtime(true);
 		if (!array_key_exists($name, $this->running))
 		{
 			$this->running[$name] = $this->elapsedTime($name);
