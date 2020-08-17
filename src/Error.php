@@ -6,7 +6,7 @@ use ErrorException;
 
 class Error extends ErrorException
 {
-	public function __construct($message, $data)
+ 	public function __construct($message, $data = null)
 	{
 		if ($data)
 		{
