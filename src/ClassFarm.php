@@ -90,7 +90,7 @@ final class ClassFarm
 				}
 				else
 				{
-					throw new \Error('Un implemented constructor type (' . gettype($constructor) . ')');
+					throw new Error('Un implemented constructor type (' . gettype($constructor) . ')');
 				}
 				self::$farm[$name]->constructed = true;
 				self::$farm[$name]->classObject = $c;

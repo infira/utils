@@ -61,7 +61,7 @@ class Gen
 		
 		if ($norepeat && $len > $max + 1)
 		{
-			throw new \Exception("Non repetitive random string can't be longer than charset");
+			throw new Error("Non repetitive random string can't be longer than charset");
 		}
 		
 		$rand_chars = [];
@@ -109,13 +109,13 @@ class Gen
 	{
 		if ($arg1)
 		{
-			throw new \Error("Cannot use multiple arguments");//cause get_func_args() causes performance issues
+			throw new Error("Cannot use multiple arguments");//cause get_func_args() causes performance issues
 		}
 		if (is_object($key))
 		{
 			if (!$key instanceof \stdClass)
 			{
-				throw new \Error("cannot make cache ID from non stdClass object, its impact for performance");
+				throw new Error("cannot make cache ID from non stdClass object, its impact for performance");
 			}
 			$key = serialize($key);
 		}

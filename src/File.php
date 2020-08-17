@@ -23,7 +23,7 @@ class File
 				self::delete($file);
 			}
 			
-			return TRUE;
+			return true;
 		}
 		elseif (is_string($files))
 		{
@@ -31,12 +31,12 @@ class File
 			{
 				if (unlink($files))
 				{
-					return TRUE;
+					return true;
 				}
 			}
 		}
 		
-		return FALSE;
+		return false;
 	}
 	
 	/**
@@ -52,11 +52,11 @@ class File
 		{
 			if (rename($file, $to))
 			{
-				return TRUE;
+				return true;
 			}
 		}
 		
-		return FALSE;
+		return false;
 	}
 	
 	/**
@@ -72,11 +72,11 @@ class File
 		{
 			if (copy($file, $to))
 			{
-				return TRUE;
+				return true;
 			}
 		}
 		
-		return FALSE;
+		return false;
 	}
 	
 	/**
@@ -86,7 +86,7 @@ class File
 	 * @param bool   $toLower - return extension name as lowercase string
 	 * @return string
 	 */
-	public static function getExtension(string $file, bool $toLower = TRUE)
+	public static function getExtension(string $file, bool $toLower = true)
 	{
 		$info = pathinfo($file);
 		if (array_key_exists("extension", $info))
@@ -107,7 +107,7 @@ class File
 	 */
 	public static function removeExtension(string $file)
 	{
-		return str_replace("." . self::getExtension($file, FALSE), "", $file);
+		return str_replace("." . self::getExtension($file, false), "", $file);
 	}
 	
 	/**
@@ -157,7 +157,7 @@ class File
 	 * @param mixed   $owner - defautls to null, owner will not be applied
 	 * @return bool
 	 */
-	public static function create(string $file, $content, $writeMode = "w+", $chmod = NULL, $owner = NULL)
+	public static function create(string $file, $content, $writeMode = "w+", $chmod = null, $owner = null)
 	{
 		$fp = fopen($file, $writeMode);
 		fwrite($fp, $content);
@@ -171,7 +171,7 @@ class File
 			chmod($file, str_pad($chmod, 4, "0", STR_PAD_LEFT));
 		}
 		
-		return TRUE;
+		return true;
 	}
 	
 	/**
@@ -191,7 +191,7 @@ class File
 	 * @param mixed  $line
 	 * @param bool   $addLineBreak - add break to end of the line
 	 */
-	public static function addLine(string $file, $line, $addLineBreak = TRUE)
+	public static function addLine(string $file, $line, $addLineBreak = true)
 	{
 		$fp = fopen($file, "a");
 		if ($addLineBreak)
@@ -212,14 +212,14 @@ class File
 		if (filter_var($file, FILTER_VALIDATE_URL))
 		{
 			$file = html_entity_decode($file);
-			if (strpos(Variable::toLower($file), "https") !== FALSE)
+			if (strpos(Variable::toLower($file), "https") !== false)
 			{
-				$steamContextOptions = array_merge(["ssl" => ["verify_peer" => FALSE, "verify_peer_name" => FALSE]], $steamContextOptions);
+				$steamContextOptions = array_merge(["ssl" => ["verify_peer" => false, "verify_peer_name" => false]], $steamContextOptions);
 			}
 			
 			if (checkArray($steamContextOptions))
 			{
-				$content = file_get_contents($file, FALSE, stream_context_create($steamContextOptions));
+				$content = file_get_contents($file, false, stream_context_create($steamContextOptions));
 			}
 			else
 			{
@@ -234,7 +234,7 @@ class File
 			}
 			else
 			{
-				throw new \Error("file not found");
+				throw new Error("file not found");
 			}
 		}
 		
@@ -248,11 +248,11 @@ class File
 	 * @param string|NULL $downloadAsFileName
 	 * @param bool        $deleteAfterDownload
 	 */
-	public static function forceDownload(string $file, string $downloadAsFileName = NULL, bool $deleteAfterDownload = FALSE)
+	public static function forceDownload(string $file, string $downloadAsFileName = null, bool $deleteAfterDownload = false)
 	{
 		if (file_exists($file))
 		{
-			$downloadAsFileName = ($downloadAsFileName != FALSE) ? $downloadAsFileName : basename($file);
+			$downloadAsFileName = ($downloadAsFileName != false) ? $downloadAsFileName : basename($file);
 			
 			// Set headers
 			header('Content-Description: File Transfer');
@@ -266,16 +266,16 @@ class File
 			//clean all levels of output buffering
 			cleanOutput();
 			readfile($file);
-			if ($deleteAfterDownload == TRUE)
+			if ($deleteAfterDownload == true)
 			{
-				ignore_user_abort(TRUE);
+				ignore_user_abort(true);
 				self::delete($file);
 			}
 			exit();
 		}
 		else
 		{
-			throw new \Error("File not found");
+			throw new Error("File not found");
 		}
 	}
 	
@@ -337,7 +337,7 @@ class File
 	 * @param string $fileName
 	 * @param bool   $deleteAfterDownload
 	 */
-	public static function show(string $file, bool $deleteAfterDownload = FALSE)
+	public static function show(string $file, bool $deleteAfterDownload = false)
 	{
 		if (file_exists($file))
 		{
@@ -347,7 +347,7 @@ class File
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 			header('Pragma: public');
 			readfile($file);
-			if ($deleteAfterDownload === TRUE)
+			if ($deleteAfterDownload === true)
 			{
 				self::delete($file);
 			}

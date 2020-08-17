@@ -704,7 +704,7 @@ class Variable
 		{
 			if ($error !== FALSE and !isset($obj[$name]))
 			{
-				throw new \Error("Variable::getObjArrValue ei leitud '$name'");
+				throw new Error("Variable::getObjArrValue ei leitud '$name'");
 			}
 			
 			return $obj[$name];
@@ -713,7 +713,7 @@ class Variable
 		{
 			if ($error !== FALSE and !isset($obj->$name))
 			{
-				throw new \Error("Variable::getObjArrValue ei leitud '$name'");
+				throw new Error("Variable::getObjArrValue ei leitud '$name'");
 			}
 			
 			return $obj->$name;

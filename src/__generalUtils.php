@@ -189,8 +189,7 @@ function callback($callback, $scope = false, $params = [])
 	}
 	else
 	{
-		addExtraErrorInfo("callback", gettype($callback));
-		alert("unimplemented callback paramaterer");
+		throw new \Infira\Utils\Error('unimplemented callback paramaterer', ['callback type' => gettype($callback)]);
 	}
 }
 
@@ -233,8 +232,7 @@ function pre($var)
 /**
  * Debug function is to debug
  *
- * @param mixed        $variable - can be all kind of type
- * @param unknown_type $trace
+ * @param mixed $variable - can be all kind of type
  */
 $GLOBALS["debugIsActive"] = false;
 function debug()
@@ -397,25 +395,36 @@ function defineOrNot($name, $value)
 }
 
 /**
- * Alias to throw new Error
+ * Alias to throw new \Infira\Utils\Error
  *
- * @param string $msg
- * @throws Exception
+ * @param string $error
+ * @throws \Infira\Utils\Error
  */
-function error(string $msg)
+function error(string $error)
 {
-	throw new \Error($msg);
+	throw new \Infira\Utils\Error($error);
 }
 
 /**
- * Alias to throw new exeption
+ * Alias to throw new ErrorException
  *
- * @param string $msg
+ * @param string $message
+ * @throws ErrorException
+ */
+function errorException(string $message)
+{
+	throw new \ErrorException($message);
+}
+
+/**
+ * Alias to throw new Exception
+ *
+ * @param string $message
  * @throws Exception
  */
-function exception(string $msg)
+function exception(string $message)
 {
-	throw new \Exception($msg);
+	throw new \Exception($message);
 }
 
 /**

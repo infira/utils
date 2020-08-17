@@ -42,7 +42,7 @@ class Profiler
 			if (!isset($value[$field]))
 			{
 				debug_print_backtrace();
-				throw new \Error($field . ' is missing in the sortable array');
+				throw new Error($field . ' is missing in the sortable array');
 			}
 			$va = $value[$field];
 			if ($field == "percent")
