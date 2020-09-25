@@ -275,9 +275,7 @@ final class RuntimeMemoryCollection
 	 */
 	public function magic(\Closure $callback)
 	{
-		$CID = ClosureHash::from($callback);
-		
-		return $this->onceCID($CID, false, $callback);
+		return $this->onceCID(ClosureHash::from($callback), false, $callback);
 	}
 	
 	/**

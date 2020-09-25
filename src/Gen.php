@@ -133,8 +133,10 @@ class Gen
 					$output .= $key . self::cacheString($item);
 				}
 			});
-			
-			return $output;
+		}
+		elseif (is_null($key) or is_bool($key))
+		{
+			$output = var_export($key, true);
 		}
 		else
 		{

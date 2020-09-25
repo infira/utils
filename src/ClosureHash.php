@@ -15,7 +15,6 @@ class ClosureHash
 	 * Returns a hash for closure
 	 *
 	 * @param \Closure $closure
-	 * @throws \ReflectionException
 	 * @return string
 	 */
 	public static function from(\Closure $closure)
@@ -27,16 +26,9 @@ class ClosureHash
 		
 		if (!isset(self::$hashes[$closure]))
 		{
-			$ref  = new \ReflectionFunction($closure);
-			$file = new \SplFileObject($ref->getFileName());
-			$file->seek($ref->getStartLine() - 1);
-			$content = '';
-			while ($file->key() < $ref->getEndLine())
-			{
-				$content .= $file->current();
-				$file->next();
-			}
-			self::$hashes[$closure] = Gen::cacheID([$content, $ref->getStaticVariables()]);
+			$ref = new \ReflectionFunction($closure);
+			
+			self::$hashes[$closure] = Gen::cacheID([$ref->__toString(), $ref->getStaticVariables()]);
 		}
 		
 		return self::$hashes[$closure];
