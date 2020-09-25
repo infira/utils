@@ -105,26 +105,41 @@ class Gen
 	 * @param string|array $key
 	 * @return string
 	 */
-	public static function cacheString($key, $arg1 = null): string
+	public static function cacheString($key): string
 	{
-		if ($arg1)
+		if (is_closure($key))
 		{
-			throw new Error("Cannot use multiple arguments");//cause get_func_args() causes performance issues
+			return ClosureHash::from($key);
 		}
-		if (is_object($key))
+		elseif (is_object($key))
 		{
-			if (!$key instanceof \stdClass)
-			{
-				throw new Error("cannot make cache ID from non stdClass object, its impact for performance");
-			}
-			$key = serialize($key);
+			return serialize($key);
 		}
 		elseif (is_array($key))
 		{
-			$key = serialize($key);
+			$output = '';
+			array_walk_recursive($key, function ($item, $key) use (&$output)
+			{
+				if (is_resource($item))
+				{
+					$output .= $key;
+				}
+				elseif ($item instanceof \Closure)
+				{
+					$output .= self::cacheString($item);
+				}
+				else
+				{
+					$output .= $key . self::cacheString($item);
+				}
+			});
+			
+			return $output;
 		}
-		
-		return $key;
+		else
+		{
+			return $key;
+		}
 	}
 	
 	public static function htmlParams($string)

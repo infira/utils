@@ -1,6 +1,8 @@
 <?php
 
 namespace Infira\Utils;
+
+
 /**
  * TempController
  * @method static string getName() Get collection name
@@ -16,8 +18,9 @@ namespace Infira\Utils;
  * @method static void eachTree(callable $callback) Call $callback for every collection, sub collection and every item<br />$callback($itemValue, $itemName, $collecitonName)
  * @method static void eachCollection(callable $callback) Call $callback for every collection<br />$callback($Colleciton, $collectionName)
  * @method static array getCollections() get all sub collections
- * @method static mixed once(string|array $key, callable $callback) delete item
- * @method static mixed onceForce(string|array $key, bool $forceset, callable $callback) delete item
+ * @method static mixed magic(\Closure $callback) Execute closure once per $key existence
+ * @method static mixed once(string|array $key, callable $callback) Execute $callback once per $key existence
+ * @method static mixed onceForce(string|array $key, bool $forceExec, callable $callback) Execute $callback once per $key existence or force it to call
  * @method static bool flush() - Flush current data and collections
  */
 class RuntimeMemory
@@ -264,47 +267,51 @@ final class RuntimeMemoryCollection
 	}
 	
 	/**
-	 * Call $callback once per $key existence
+	 * Execute closure once per $key existence
+	 * All arguments after  $callback will be passed to callable method
+	 *
+	 * @param \Closure $callback method result will be setted to memory for later use
+	 * @return mixed - $callback result
+	 */
+	public function magic(\Closure $callback)
+	{
+		$CID = ClosureHash::from($callback);
+		
+		return $this->onceCID($CID, false, $callback);
+	}
+	
+	/**
+	 * Execute $callback once per $key existence
 	 * All arguments after  $callback will be passed to callable method
 	 *
 	 * @param string|array|int $key
-	 * @param callable         $callback      method result will be setted to memory for later use
-	 * @param mixed            $callbackArg1  -
-	 * @param mixed            $callbackArg2  -
-	 * @param mixed            $callbackArg3  -
-	 * @param mixed            $callbackArg_n -
+	 * @param callable         $callback method result will be setted to memory for later use
 	 * @return mixed - $callback result
 	 */
 	public function once($key, callable $callback)
 	{
-		$CID = Gen::cacheID($key);
-		if (!$this->exists($CID))
-		{
-			$this->set($CID, call_user_func_array($callback, array_slice(func_get_args(), 2)));
-		}
-		
-		return $this->get($CID);
+		return $this->onceCID(Gen::cacheID($key), false, $callback);
 	}
 	
 	/**
-	 * Call $callback once per $key existence or force it to call
-	 * All arguments after  $forceSet will be passed to callable method
+	 * Execute $callback once per $key existence or force it to call
+	 * All arguments after  $forceExec will be passed to callable method
 	 *
 	 * @param string|array|int $key
 	 * @param callable         $callback
-	 * @param bool             $forceSet      - if its true then $callback will be called regardless of is the $key setted or not
-	 * @param mixed            $callbackArg1  -
-	 * @param mixed            $callbackArg2  -
-	 * @param mixed            $callbackArg3  -
-	 * @param mixed            $callbackArg_n -
+	 * @param bool             $forceExec - if its true then $callback will be called regardless of is the item is setted or not
 	 * @return mixed|null - $callback result
 	 */
-	public function onceForce($key, callable $callback, bool $forceSet = false)
+	public function onceForce($key, callable $callback, bool $forceExec = false)
 	{
-		$CID = Gen::cacheID($key);
-		if (!$this->exists($CID) or $forceSet == true)
+		return $this->onceCID(Gen::cacheID($key), $forceExec, $callback);
+	}
+	
+	private function onceCID(string $CID, bool $forceExec, callable $callback)
+	{
+		if (!$this->exists($CID) or $forceExec == true)
 		{
-			$this->set($CID, call_user_func_array($callback, array_slice(func_get_args(), 3)));
+			$this->set($CID, call_user_func($callback));
 		}
 		
 		return $this->get($CID);

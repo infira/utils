@@ -1,34 +1,34 @@
 <?php
 
-use Infira\Utils\Gen;
+namespace Infira\Utils;
 
 class ClosureHash
 {
 	/**
 	 * List of hashes
 	 *
-	 * @var SplObjectStorage
+	 * @var \SplObjectStorage
 	 */
 	protected static $hashes = null;
 	
 	/**
 	 * Returns a hash for closure
 	 *
-	 * @param Closure $closure
-	 * @throws ReflectionException
+	 * @param \Closure $closure
+	 * @throws \ReflectionException
 	 * @return string
 	 */
-	public static function from(Closure $closure)
+	public static function from(\Closure $closure)
 	{
 		if (!self::$hashes)
 		{
-			self::$hashes = new SplObjectStorage();
+			self::$hashes = new \SplObjectStorage();
 		}
 		
 		if (!isset(self::$hashes[$closure]))
 		{
-			$ref  = new ReflectionFunction($closure);
-			$file = new SplFileObject($ref->getFileName());
+			$ref  = new \ReflectionFunction($closure);
+			$file = new \SplFileObject($ref->getFileName());
 			$file->seek($ref->getStartLine() - 1);
 			$content = '';
 			while ($file->key() < $ref->getEndLine())

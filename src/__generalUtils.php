@@ -143,7 +143,7 @@ function eachArray($array, $function)
 
 function is_closure($t)
 {
-	return is_object($t) && ($t instanceof Closure);
+	return is_object($t) && ($t instanceof \Closure);
 }
 
 function callback($callback, $scope = false, $params = [])
