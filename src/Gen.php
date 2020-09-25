@@ -133,15 +133,15 @@ class Gen
 					$output .= $key . self::cacheString($item);
 				}
 			});
+			
+			return $output;
 		}
-		elseif (is_null($key) or is_bool($key))
+		elseif (!is_string($key))
 		{
 			return var_export($key, true);
 		}
-		else
-		{
-			return $key;
-		}
+		
+		return $key;
 	}
 	
 	public static function htmlParams($string)
