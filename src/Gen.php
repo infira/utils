@@ -136,7 +136,7 @@ class Gen
 		}
 		elseif (is_null($key) or is_bool($key))
 		{
-			$output = var_export($key, true);
+			return var_export($key, true);
 		}
 		else
 		{
