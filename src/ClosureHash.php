@@ -15,6 +15,7 @@ class ClosureHash
 	 * Returns a hash for closure
 	 *
 	 * @param \Closure $closure
+	 * @throws \ReflectionException
 	 * @return string
 	 */
 	public static function from(\Closure $closure)

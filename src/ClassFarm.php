@@ -49,11 +49,12 @@ final class ClassFarm
 	/**
 	 * get constructed farmer class object
 	 *
-	 * @param string $name
-	 * @param object $scope
+	 * @param string      $name
+	 * @param object|null $scope
+	 * @throws Error
 	 * @return null|object
 	 */
-	public static function get(string $name, $scope = null)
+	public static function get(string $name, object $scope = null)
 	{
 		if (self::exists($name))
 		{
@@ -105,11 +106,12 @@ final class ClassFarm
 	/**
 	 * Adds a new farmer and return constructed farmer class
 	 *
-	 * @param                 $name
+	 * @param string          $name
 	 * @param callable|string $constructor
+	 * @throws Error
 	 * @return object|null
 	 */
-	public static function instance($name, $constructor)
+	public static function instance(string $name, $constructor)
 	{
 		self::add($name, $constructor);
 		
@@ -117,24 +119,20 @@ final class ClassFarm
 	}
 	
 	/**
-	 * Add a new farmer (does not construct it)
-	 *
 	 * @param string          $name
 	 * @param string|callable $constructor
-	 * @return bool
 	 */
 	public static function add(string $name, $constructor)
 	{
-		if (self::exists($name))
+		if (!self::exists($name))
 		{
-			return true;
+			$path                  = preg_split('/->|>/', $name);
+			$instance              = new \stdClass();
+			$instance->constructed = false;
+			$instance->constructor = $constructor;
+			$instance->namespace   = end($path);
+			self::$farm[$name]     = $instance;
 		}
-		$path                  = preg_split('/->|>/', $name);
-		$instance              = new \stdClass();
-		$instance->constructed = false;
-		$instance->constructor = $constructor;
-		$instance->namespace   = end($path);
-		self::$farm[$name]     = $instance;
 	}
 	
 	/**

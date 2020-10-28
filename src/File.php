@@ -116,7 +116,7 @@ class File
 	 * @param string $file - file to be replaced
 	 * @return string
 	 */
-	public static function getFileNameWithoutExtension($file)
+	public static function getFileNameWithoutExtension(string $file)
 	{
 		return pathinfo($file)["filename"];
 	}
@@ -128,7 +128,7 @@ class File
 	 * @param string $newName without extension
 	 * @return string
 	 */
-	public static function replaceName($file, $newName)
+	public static function replaceName(string $file, string $newName)
 	{
 		$info    = pathinfo($file);
 		$dirName = trim(Fix::dirPath($info["dirname"]));
@@ -142,7 +142,7 @@ class File
 	 * @param string $file
 	 * @return string
 	 */
-	public static function getPath($file)
+	public static function getPath(string $file)
 	{
 		$info = pathinfo($file);
 		
@@ -150,14 +150,14 @@ class File
 	}
 	
 	/**
-	 * @param string  $file
-	 * @param         $content
-	 * @param string  $writeMode
-	 * @param integer $chmod - defautls to null, chmod will not be applied
-	 * @param mixed   $owner - defautls to null, owner will not be applied
+	 * @param string   $file
+	 * @param          $content
+	 * @param string   $writeMode
+	 * @param int|null $chmod - defautls to null, chmod will not be applied
+	 * @param mixed    $owner - defautls to null, owner will not be applied
 	 * @return bool
 	 */
-	public static function create(string $file, $content, $writeMode = "w+", $chmod = null, $owner = null)
+	public static function create(string $file, $content, $writeMode = "w+", int $chmod = null, $owner = null)
 	{
 		$fp = fopen($file, $writeMode);
 		fwrite($fp, $content);
@@ -205,6 +205,7 @@ class File
 	/**
 	 * @param       $file
 	 * @param array $steamContextOptions
+	 * @throws Error
 	 * @return bool|false|string
 	 */
 	public static function getContent(string $file, $steamContextOptions = [])
@@ -247,6 +248,7 @@ class File
 	 * @param string      $file - file path
 	 * @param string|NULL $downloadAsFileName
 	 * @param bool        $deleteAfterDownload
+	 * @throws Error
 	 */
 	public static function forceDownload(string $file, string $downloadAsFileName = null, bool $deleteAfterDownload = false)
 	{
@@ -334,7 +336,6 @@ class File
 	 * Show file content as header
 	 *
 	 * @param string $file
-	 * @param string $fileName
 	 * @param bool   $deleteAfterDownload
 	 */
 	public static function show(string $file, bool $deleteAfterDownload = false)
@@ -383,9 +384,10 @@ class File
 	 *
 	 * @param string $fileUrl - full url
 	 * @param string $saveTo  - path
+	 * @throws Error
 	 * @return bool
 	 */
-	public static function download($fileUrl, $saveTo)
+	public static function download(string $fileUrl, string $saveTo)
 	{
 		return file_put_contents($saveTo, self::getContent($fileUrl));
 	}

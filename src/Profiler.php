@@ -32,6 +32,7 @@ class Profiler
 	 * @param array $data
 	 * @param bool  $field
 	 * @param bool  $descending
+	 * @throws Error
 	 */
 	public function orderByField(array &$data = [], $field = false, $descending = false)
 	{
@@ -208,6 +209,7 @@ class Profiler
 	/**
 	 * Get html timers HTML
 	 *
+	 * @throws Error
 	 * @return string
 	 */
 	public function dumpTimers(): string
@@ -287,7 +289,7 @@ class Profiler
 	
 	public function printTimers()
 	{
-		echo $this->dumpTimers(true);
+		echo $this->dumpTimers();
 	}
 	
 	/**

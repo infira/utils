@@ -26,7 +26,7 @@ class Dir
 			rmdir($path);
 		}
 		
-		return TRUE;
+		return true;
 	}
 	
 	/**
@@ -64,21 +64,21 @@ class Dir
 			}
 		}
 		
-		return TRUE;
+		return true;
 	}
 	
 	/**
 	 * If folder doest no exists make it
 	 *
-	 * @param     $path
-	 * @param int $chmod - chod it
+	 * @param string $path
+	 * @param int    $chmod - chod it
 	 * @return string created dir path
 	 */
-	public static function make($path, int $chmod = 0777): string
+	public static function make(string $path, int $chmod = 0777): string
 	{
 		if (!file_exists($path))
 		{
-			mkdir($path, 0777, TRUE);
+			mkdir($path, $chmod, true);
 		}
 		
 		return $path;
@@ -92,7 +92,7 @@ class Dir
 	 * @param bool   $absolutePath - get absolute paths
 	 * @return array
 	 */
-	public static function getContents(string $path, $exlude = [], bool $recursive = FALSE, bool $absolutePath = FALSE): array
+	public static function getContents(string $path, $exlude = [], bool $recursive = false, bool $absolutePath = false): array
 	{
 		$exlude   = Variable::toArray($exlude);
 		$exlude[] = ".";

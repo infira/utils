@@ -2,6 +2,8 @@
 
 namespace Infira\Utils;
 
+use stdClass;
+
 /**
  * A collection of static methods to manipulate with variables
  */
@@ -11,23 +13,21 @@ class Variable
 	/**
 	 * Apply some values to ibject
 	 *
-	 * @param array /object $toVariable
-	 *            The receiver of the properties
-	 * @param array /object $values
-	 *            The source of the properties
-	 * @param array /object $default
-	 *            A different object that will also be applied for default values
+	 * @param array|object|string|null $toVariable - The receiver of the properties
+	 * @param array|object             $values     - The source of the properties
+	 * @param array|object             $default    - A different object that will also be applied for default values
+	 * @return array|stdClass
 	 */
-	public static function apply($toVariable = FALSE, $values = [], $default = [])
+	public static function apply($toVariable = null, $values = [], $default = [])
 	{
-		if ($toVariable === FALSE or $toVariable == "new" or $toVariable == "empty" or $toVariable == "{}")
+		if ($toVariable === null or $toVariable == "new" or $toVariable == "empty" or $toVariable == "{}")
 		{
-			$toVariable = new \stdClass();
+			$toVariable = new stdClass();
 		}
-		$returnAsObject = FALSE;
+		$returnAsObject = false;
 		if (is_object($toVariable))
 		{
-			$returnAsObject = TRUE;
+			$returnAsObject = true;
 		}
 		
 		$toVariable = self::toArray($toVariable);
@@ -64,9 +64,10 @@ class Variable
 	/**
 	 * Get string last characr
 	 *
-	 * @param unknown $str
+	 * @param string
+	 * @return null|string
 	 */
-	public static function lastChar($str)
+	public static function lastChar(string $str)
 	{
 		$len = strlen($str);
 		if ($len > 0)
@@ -76,17 +77,18 @@ class Variable
 			return $str{$ll};
 		}
 		
-		return FALSE;
+		return null;
 	}
 	
 	/**
 	 * Assigns string variables to tekst
 	 *
-	 * @param array  $vars
-	 * @param string $string
-	 * @return $string
+	 * @param array      $vars
+	 * @param string     $string
+	 * @param array|null $defaultVars
+	 * @return mixed|string|string[] $string
 	 */
-	public static function assign($vars, $string, $defaultVars = FALSE)
+	public static function assign(array $vars, string $string, array $defaultVars = null)
 	{
 		if (is_string($vars))
 		{
@@ -99,9 +101,9 @@ class Variable
 				$string = str_replace(['%' . $name . '%', '[' . $name . ']'], $value, $string);
 			}
 		}
-		if ($defaultVars !== FALSE)
+		if ($defaultVars)
 		{
-			$string = self::assign($defaultVars, $string, FALSE);
+			$string = self::assign($defaultVars, $string, false);
 		}
 		
 		return $string;
@@ -111,13 +113,13 @@ class Variable
 	 * Convert variable valut to array
 	 *
 	 * @param mixed  $var
-	 * @param string $caseStringExplodeDelim
-	 *            - if the $var type is string then string is exploded to this param delimiter
+	 * @param bool   $recursive
+	 * @param string $caseStringExplodeDelim - if the $var type is string then string is exploded to this param delimiter
 	 * @return array
 	 */
-	public static function toArray($var, $recursive = FALSE, $caseStringExplodeDelim = ",")
+	public static function toArray($var, $recursive = false, $caseStringExplodeDelim = ",")
 	{
-		if ($recursive == FALSE)
+		if ($recursive == false)
 		{
 			if (is_object($var))
 			{
@@ -154,7 +156,7 @@ class Variable
 		{
 			if (is_array($var) and count($var) > 0)
 			{
-				$hadNotArray = FALSE;
+				$hadNotArray = false;
 				foreach ($var as $key => $val)
 				{
 					if (is_object($val))
@@ -173,7 +175,7 @@ class Variable
 			}
 			elseif (is_string($var) or is_int($var) or is_numeric($var))
 			{
-				return self::toArray($var, FALSE, $caseStringExplodeDelim);
+				return self::toArray($var, false, $caseStringExplodeDelim);
 			}
 			else
 			{
@@ -182,7 +184,7 @@ class Variable
 		}
 	}
 	
-	public static function toIntArray($var, $recursive = FALSE, $caseStringExplodeDelim = ",")
+	public static function toIntArray($var, $recursive = false, $caseStringExplodeDelim = ",")
 	{
 		$arr    = self::toArray($var, $recursive, $caseStringExplodeDelim);
 		$newArr = [];
@@ -194,7 +196,7 @@ class Variable
 		return $newArr;
 	}
 	
-	public static function toArrayHasValue($var, $recursive = FALSE, $caseStringExplodeDelim = ",")
+	public static function toArrayHasValue($var, $recursive = false, $caseStringExplodeDelim = ",")
 	{
 		$arr    = self::toArray($var, $recursive, $caseStringExplodeDelim);
 		$newArr = [];
@@ -214,8 +216,9 @@ class Variable
 	 *
 	 * @param array  $array
 	 * @param string $surrounding
+	 * @return array
 	 */
-	public static function addSurroundinsToArrayEl($array, $surrounding = "'")
+	public static function addSurroundinsToArrayEl(array $array, $surrounding = "'")
 	{
 		if (checkArray($array))
 		{
@@ -228,7 +231,7 @@ class Variable
 		return $array;
 	}
 	
-	public static function __toArrayOld($var, $recursive = FALSE, $caseStringExplodeDelim = ",")
+	public static function __toArrayOld($var, $recursive = false, $caseStringExplodeDelim = ",")
 	{
 		if (is_array($var))
 		{
@@ -258,13 +261,13 @@ class Variable
 		{
 			$r = [];
 		}
-		if (count($r) > 0 and $recursive == TRUE)
+		if (count($r) > 0 and $recursive == true)
 		{
 			foreach ($r as $key => $val)
 			{
 				if (is_object($val))
 				{
-					$r[$key] = self::__toArrayOld($val, TRUE);
+					$r[$key] = self::__toArrayOld($val, true);
 				}
 				elseif (is_array($val))
 				{
@@ -273,7 +276,7 @@ class Variable
 					{
 						if (is_object($v) or is_array($v))
 						{
-							$r[$key] = self::__toArrayOld($val, TRUE);
+							$r[$key] = self::__toArrayOld($val, true);
 						}
 						else
 						{
@@ -299,7 +302,7 @@ class Variable
 	 *            The array("name"=>"gen") result should be Object->name = "gen"
 	 * @return stdClass
 	 */
-	public static function toObject($var, $recursive = FALSE)
+	public static function toObject($var, $recursive = false)
 	{
 		if (is_object($var))
 		{
@@ -317,7 +320,7 @@ class Variable
 			
 			return $var;
 		}
-		$Return = new \stdClass();
+		$Return = new stdClass();
 		if (is_array($var) and count($var) > 0)
 		{
 			$var = (object)$var;
@@ -336,7 +339,7 @@ class Variable
 	 *            The array("name"=>"gen") result should be Object->name = "gen"
 	 * @return stdClass
 	 */
-	public static function toObjectArray($var, $recursive = FALSE)
+	public static function toObjectArray($var, $recursive = false)
 	{
 		foreach ($var as $key => $val)
 		{
@@ -365,11 +368,11 @@ class Variable
 	 */
 	public static function boolToString($var)
 	{
-		if ($var === TRUE)
+		if ($var === true)
 		{
 			return "true";
 		}
-		elseif ($var === FALSE)
+		elseif ($var === false)
 		{
 			return "false";
 		}
@@ -381,20 +384,21 @@ class Variable
 	 * Coneverts variable to boolean value
 	 *
 	 * @param mixed $var
+	 * @param bool  $parseAlsoString
 	 * @return bool
 	 */
-	public static function toBool($var, $parseAlsoString = FALSE)
+	public static function toBool($var, $parseAlsoString = false)
 	{
-		if ($parseAlsoString == TRUE)
+		if ($parseAlsoString == true)
 		{
 			$lowerVal = self::toLower($var);
 			if ($lowerVal == "true")
 			{
-				return TRUE;
+				return true;
 			}
 			elseif ($lowerVal == "false")
 			{
-				return FALSE;
+				return false;
 			}
 		}
 		
@@ -418,7 +422,7 @@ class Variable
 	 * Converts variable value to numeric value
 	 *
 	 * @param mixed $val
-	 * @return unknown
+	 * @return mixed
 	 */
 	public static function toNumber($val)
 	{
@@ -468,7 +472,7 @@ class Variable
 	 * @param string $string
 	 * @return int
 	 */
-	public static function getDigitals($string)
+	public static function getDigitals(string $string)
 	{
 		$matches = Regex::getMatches('/[\\d]/', $string);
 		$r       = "";
@@ -486,7 +490,7 @@ class Variable
 	/**
 	 * Conver number to negative
 	 *
-	 * @param mixed $val
+	 * @param $number
 	 * @return number
 	 */
 	public static function toNegative($number)
@@ -497,7 +501,7 @@ class Variable
 	/**
 	 * Convert number to positive
 	 *
-	 * @param mixed $val
+	 * @param $number
 	 * @return number
 	 */
 	public static function toPositive($number)
@@ -529,7 +533,7 @@ class Variable
 	 * @param string $string
 	 * @return string
 	 */
-	public static function toPrefex($string)
+	public static function toPrefex(string $string)
 	{
 		return "/" . $string . "/";
 	}
@@ -554,7 +558,7 @@ class Variable
 	 * @param string $var
 	 * @return string
 	 */
-	public static function toUpper($var)
+	public static function toUpper(string $var)
 	{
 		return mb_convert_case($var, MB_CASE_UPPER, "UTF-8");
 	}
@@ -565,7 +569,7 @@ class Variable
 	 * @param string $var
 	 * @return string
 	 */
-	public static function toCamelCase($var)
+	public static function toCamelCase(string $var)
 	{
 		// -|_
 		if (Regex::getMatch('/-|_/', $var))
@@ -587,7 +591,7 @@ class Variable
 	 * @param string $var
 	 * @return string
 	 */
-	public static function toLower($var)
+	public static function toLower(string $var)
 	{
 		return mb_convert_case($var, MB_CASE_LOWER, "UTF-8");
 	}
@@ -598,7 +602,7 @@ class Variable
 	 * @param string $var
 	 * @return string
 	 */
-	public static function lcFirst($var)
+	public static function lcFirst(string $var)
 	{
 		$r = self::toLower($var{0});
 		if (strlen($var) > 0)
@@ -612,7 +616,8 @@ class Variable
 	/**
 	 * Convert string to lower case
 	 *
-	 * @param string $var
+	 * @param        $string
+	 * @param string $encoding
 	 * @return string
 	 */
 	public static function ucFirst($string, $encoding = 'UTF-8')
@@ -629,7 +634,7 @@ class Variable
 	 * @param string $string
 	 * @return string
 	 */
-	public static function toASCII($string)
+	public static function toASCII(string $string)
 	{
 		$string = trim($string);
 		// return mb_convert_encoding($string, 'UTF-8');
@@ -648,7 +653,7 @@ class Variable
 	 * @param string $string
 	 * @return string
 	 */
-	public static function toUTF8($string)
+	public static function toUTF8(string $string)
 	{
 		$string = trim($string);
 		// return mb_convert_encoding($string, 'UTF-8');
@@ -664,17 +669,17 @@ class Variable
 	/**
 	 * Converts html to text
 	 *
-	 * @param string $str
-	 * @param string/array $voidTags - html tags to void on stripping, see http://php.net/manual/en/function.strip-tags.php
+	 * @param string            $str
+	 * @param null|string|array $voidTags
 	 * @return string
 	 */
-	public static function htmlToText($str, $voidTags = FALSE)
+	public static function htmlToText(string $str, $voidTags = null)
 	{
-		if ($voidTags === FALSE)
+		if ($voidTags === false)
 		{
 			$voidTags = "";
 		}
-		if (is_string($voidTags) AND strlen($voidTags) > 0 AND $voidTags{0} != "<")
+		if (is_string($voidTags) and strlen($voidTags) > 0 and $voidTags{0} != "<")
 		{
 			$voidTags = Variable::toArray($voidTags);
 		}
@@ -692,17 +697,20 @@ class Variable
 	
 	/**
 	 * Converts to megabytes
+	 *
+	 * @param $var
+	 * @return float|int
 	 */
 	public static function toMB($var)
 	{
 		return $var / 1048576;
 	}
 	
-	public static function getObjArrValue($obj, $name, $error = FALSE)
+	public static function getObjArrValue($obj, $name, $error = false)
 	{
 		if (is_array($obj))
 		{
-			if ($error !== FALSE and !isset($obj[$name]))
+			if ($error !== false and !isset($obj[$name]))
 			{
 				throw new Error("Variable::getObjArrValue ei leitud '$name'");
 			}
@@ -711,7 +719,7 @@ class Variable
 		}
 		elseif (is_object($obj))
 		{
-			if ($error !== FALSE and !isset($obj->$name))
+			if ($error !== false and !isset($obj->$name))
 			{
 				throw new Error("Variable::getObjArrValue ei leitud '$name'");
 			}

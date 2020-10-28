@@ -28,11 +28,12 @@ class URLBuilder
 	 * @param string|array $urlParams
 	 * @param string|array $aie        - add to url if exists in current url, example current url is ?name=gen, self::get(["lastName"=>"series"],"name") outpiuts url ?name=gen&lastName=series
 	 * @param bool         $getNiceUrl - true to return nice url instead of /?id=mainPage&subPage=content you get /mainPage?subPage=content
+	 * @throws Error
 	 * @return string
 	 */
-	public static function get($urlParams = [], $aie = [], $getNiceUrl = TRUE)
+	public static function get($urlParams = [], $aie = [], $getNiceUrl = true)
 	{
-		$tmpID = FALSE;
+		$tmpID = false;
 		if (checkArray($urlParams))
 		{
 			if (count($urlParams) == 2 && isset($urlParams[self::$mainVar]) and isset($urlParams[0]))
@@ -43,7 +44,7 @@ class URLBuilder
 		}
 		elseif (is_string($urlParams))
 		{
-			if (strpos($urlParams, "=") !== FALSE)
+			if (strpos($urlParams, "=") !== false)
 			{
 				$urlParams = parseStr($urlParams);
 			}
@@ -58,7 +59,7 @@ class URLBuilder
 			$urlParams = [];
 		}
 		
-		if ($tmpID !== FALSE)
+		if ($tmpID !== false)
 		{
 			$urlParams[self::$mainVar] = $tmpID;
 		}
@@ -72,7 +73,7 @@ class URLBuilder
 		{
 			foreach ($aie as $name)
 			{
-				if (Http::existsGET($name) AND !array_key_exists($name, $urlParams))
+				if (Http::existsGET($name) and !array_key_exists($name, $urlParams))
 				{
 					$urlParams[$name] = Http::getGET($name);
 				}
@@ -85,7 +86,7 @@ class URLBuilder
 			$link .= "?" . http_build_query($urlParams, "&");
 		}
 		
-		if ($getNiceUrl AND isset($urlParams[self::$mainVar]))
+		if ($getNiceUrl and isset($urlParams[self::$mainVar]))
 		{
 			$mv  = $urlParams[self::$mainVar];
 			$mvr = $urlParams[self::$mainVar];

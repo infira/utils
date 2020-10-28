@@ -3,6 +3,9 @@
 namespace Infira\Utils;
 
 
+use Closure;
+use ReflectionException;
+
 /**
  * TempController
  * @method static string getName() Get collection name
@@ -18,7 +21,7 @@ namespace Infira\Utils;
  * @method static void eachTree(callable $callback) Call $callback for every collection, sub collection and every item<br />$callback($itemValue, $itemName, $collecitonName)
  * @method static void eachCollection(callable $callback) Call $callback for every collection<br />$callback($Colleciton, $collectionName)
  * @method static array getCollections() get all sub collections
- * @method static mixed magic(\Closure $callback) Execute closure once per $key existence
+ * @method static mixed magic(Closure $callback) Execute closure once per $key existence
  * @method static mixed once(string|array $key, callable $callback) Execute $callback once per $key existence
  * @method static mixed onceForce(string|array $key, bool $forceExec, callable $callback) Execute $callback once per $key existence or force it to call
  * @method static bool flush() - Flush current data and collections
@@ -29,13 +32,13 @@ class RuntimeMemory
 	
 	/**
 	 * @param string $key - collection name
-	 * @return \Infira\Utils\RuntimeMemoryCollection
+	 * @return RuntimeMemoryCollection
 	 */
-	public static function Collection(string $key): \Infira\Utils\RuntimeMemoryCollection
+	public static function Collection(string $key): RuntimeMemoryCollection
 	{
 		if (!isset(self::$collections[$key]))
 		{
-			self::$collections[$key] = new \Infira\Utils\RuntimeMemoryCollection($key);
+			self::$collections[$key] = new RuntimeMemoryCollection($key);
 		}
 		
 		return self::$collections[$key];
@@ -62,13 +65,13 @@ final class RuntimeMemoryCollection
 	
 	/**
 	 * @param string $name - collection name
-	 * @return \Infira\Utils\RuntimeMemoryCollection
+	 * @return RuntimeMemoryCollection
 	 */
-	public function Collection(string $name): \Infira\Utils\RuntimeMemoryCollection
+	public function Collection(string $name): RuntimeMemoryCollection
 	{
 		if (!isset($this->collections[$name]))
 		{
-			$this->collections[$name] = new \Infira\Utils\RuntimeMemoryCollection($name);
+			$this->collections[$name] = new RuntimeMemoryCollection($name);
 		}
 		
 		return $this->collections[$name];
@@ -270,10 +273,11 @@ final class RuntimeMemoryCollection
 	 * Execute closure once per $key existence
 	 * All arguments after  $callback will be passed to callable method
 	 *
-	 * @param \Closure $callback method result will be setted to memory for later use
+	 * @param Closure $callback method result will be setted to memory for later use
+	 * @throws ReflectionException
 	 * @return mixed - $callback result
 	 */
-	public function magic(\Closure $callback)
+	public function magic(Closure $callback)
 	{
 		return $this->onceCID(ClosureHash::from($callback), false, $callback);
 	}
@@ -284,6 +288,7 @@ final class RuntimeMemoryCollection
 	 *
 	 * @param string|array|int $key
 	 * @param callable         $callback method result will be setted to memory for later use
+	 * @throws ReflectionException
 	 * @return mixed - $callback result
 	 */
 	public function once($key, callable $callback)
@@ -298,6 +303,7 @@ final class RuntimeMemoryCollection
 	 * @param string|array|int $key
 	 * @param callable         $callback
 	 * @param bool             $forceExec - if its true then $callback will be called regardless of is the item is setted or not
+	 * @throws ReflectionException
 	 * @return mixed|null - $callback result
 	 */
 	public function onceForce($key, callable $callback, bool $forceExec = false)

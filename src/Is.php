@@ -7,7 +7,7 @@ class Is
 	/**
 	 * Deletes file
 	 *
-	 * @param string $dir ;
+	 * @param $email
 	 * @return bool
 	 */
 	public static function email($email)
@@ -16,7 +16,7 @@ class Is
 		if (!preg_match("/^[^@]{1,64}@[^@]{1,255}$/", $email))
 		{
 			// Email invalid because wrong number of characters in one section, or wrong number of @ symbols.
-			return FALSE;
+			return false;
 		}
 		// Split it into sections to make life easier
 		$email_array = explode("@", $email);
@@ -25,7 +25,7 @@ class Is
 		{
 			if (!preg_match("/^(([A-Za-z0-9!#$%&'*+\/=?^_`{|}~-][A-Za-z0-9!#$%&'*+\/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$/", $local_array[$i]))
 			{
-				return FALSE;
+				return false;
 			}
 		}
 		if (!preg_match("/^\[?[0-9\.]+\]?$/", $email_array[1]))
@@ -33,18 +33,18 @@ class Is
 			$domain_array = explode(".", $email_array[1]);
 			if (sizeof($domain_array) < 2)
 			{
-				return FALSE; // Not enough parts to domain
+				return false; // Not enough parts to domain
 			}
 			for ($i = 0; $i < sizeof($domain_array); $i++)
 			{
 				if (!preg_match("/^(([A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9])|([A-Za-z0-9]+))$/", $domain_array[$i]))
 				{
-					return FALSE;
+					return false;
 				}
 			}
 		}
 		
-		return TRUE;
+		return true;
 	}
 	
 	
@@ -58,18 +58,18 @@ class Is
 	{
 		if (is_int($val) or is_numeric($val))
 		{
-			return TRUE;
+			return true;
 		}
 		else
 		{
 			//^\d+?(\.|,)\d+?$
 			if (Regex::isMatch('/^\d+?(\.|,)\d+?$/m', (string)$val))
 			{
-				return TRUE;
+				return true;
 			}
 		}
 		
-		return FALSE;
+		return false;
 	}
 	
 	/**
@@ -82,12 +82,12 @@ class Is
 	{
 		if (empty($val))
 		{
-			return FALSE;
+			return false;
 		}
 		$time = trim(strtotime($val));
 		if (empty($time))
 		{
-			return FALSE;
+			return false;
 		}
 		$date = date("d.m.Y", strtotime($val));
 		if (Is::match('/\\d{2}.\\d{2}.\\d{4}/', $date))
@@ -95,11 +95,11 @@ class Is
 			$ex = explode(".", $date);
 			if (checkdate($ex[1], $ex[0], $ex[2]))
 			{
-				return TRUE;
+				return true;
 			}
 		}
 		
-		return FALSE;
+		return false;
 	}
 	
 	
@@ -114,7 +114,7 @@ class Is
 		$val = trim($val);
 		if (empty($val))
 		{
-			return FALSE;
+			return false;
 		}
 		
 		return preg_match('/\\d\\d:\\d\\d/', $val);
@@ -124,10 +124,11 @@ class Is
 	/**
 	 * Function to check is given value match to given preg_ regeq
 	 *
-	 * @param mixed $val
+	 * @param string $regex
+	 * @param mixed  $val
 	 * @return bool
 	 */
-	public static function match($regex, $val)
+	public static function match(string $regex, $val)
 	{
 		return Regex::isMatch($regex, $val);
 	}
@@ -138,13 +139,12 @@ class Is
 	 *
 	 * @param string $className
 	 * @return boolean
-	 * @var is instance of class
 	 */
-	public static function isClass($var, $className)
+	public static function isClass($var, string $className)
 	{
 		if (!is_object($var))
 		{
-			return FALSE;
+			return false;
 		}
 		
 		return $var instanceof $className;

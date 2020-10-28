@@ -2,8 +2,6 @@
 
 namespace Infira\Utils;
 
-use Infira\Utils\ClassFarm;
-
 /**
  * Its like MagicClass but for static methods
  *

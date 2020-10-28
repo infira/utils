@@ -26,6 +26,7 @@ class MagicClass
 	 * Register a array of classes [$propertyName => string|callable $constructor]
 	 *
 	 * @param array $members
+	 * @throws Error
 	 */
 	protected final function registerProperties(array $members)
 	{
@@ -40,7 +41,7 @@ class MagicClass
 	 *
 	 * @param string          $property
 	 * @param string|callable $constructor
-	 * @return bool
+	 * @throws Error
 	 */
 	protected final function registerPropertyClass(string $property, $constructor)
 	{
@@ -58,6 +59,7 @@ class MagicClass
 	 * @see https://www.php.net/manual/en/language.oop5.magic.php
 	 * @param string $name
 	 * @return mixed
+	 * @throws Error
 	 */
 	public final function __get(string $name)
 	{

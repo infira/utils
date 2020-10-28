@@ -52,6 +52,7 @@ class Gen
 	 *
 	 * @param int  $len
 	 * @param bool $norepeat - characates cannot be repeated
+	 * @throws Error
 	 * @return string
 	 */
 	public static function randomString(int $len, bool $norepeat = true)
@@ -91,6 +92,7 @@ class Gen
 	/**
 	 * Generate 32bit string from method argumetns, use for cache string
 	 *
+	 * @throws \ReflectionException
 	 * @return string
 	 */
 	public static function cacheID()
@@ -102,7 +104,8 @@ class Gen
 	/**
 	 * Generate cache string form aruments
 	 *
-	 * @param string|array $key
+	 * @param mixed $key
+	 * @throws \ReflectionException
 	 * @return string
 	 */
 	public static function cacheString($key): string

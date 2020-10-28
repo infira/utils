@@ -13,7 +13,7 @@ class Fix
 	 * @param string $fileName
 	 * @return string
 	 */
-	public static function fileName($fileName)
+	public static function fileName(string $fileName)
 	{
 		$ex = explode("?", $fileName);
 		
@@ -24,9 +24,10 @@ class Fix
 	 * Fixes <br> to <br />
 	 *
 	 * @param string $string
+	 * @param bool   $isXHTML
 	 * @return string
 	 */
-	public static function br($string, $isXHTML = true)
+	public static function br(string $string, $isXHTML = true)
 	{
 		$br = ($isXHTML) ? "<br />" : "<br>";
 		
@@ -37,11 +38,11 @@ class Fix
 	 * New line to br
 	 *
 	 * @param string $string
-	 * @param bool   $isXHTML
-	 *            - is XHTML "<br />" used only in PHP 5.3.x
+	 * @param bool   $isXHTML - is XHTML "<br />" used only in PHP 5.3.x
+	 * @param null   $fixBr
 	 * @return string
 	 */
-	public static function nl2br($string, $isXHTML = true, $fixBr = null)
+	public static function nl2br(string $string, $isXHTML = true, $fixBr = null)
 	{
 		if ($fixBr !== null)
 		{
@@ -65,13 +66,16 @@ class Fix
 	 * @param string $string
 	 * @return string
 	 */
-	public static function nl($string)
+	public static function nl(string $string)
 	{
 		return str_replace('<br />', "\n", self::br($string, "<br />"));
 	}
 	
 	/**
 	 * Fix array, if $var is not array, then empty array is returned
+	 *
+	 * @param $arr
+	 * @return array
 	 */
 	public static function arr($arr)
 	{
@@ -86,11 +90,12 @@ class Fix
 	/**
 	 * Fix value with
 	 *
-	 * @param mixed  $value
-	 * @param string $with
-	 *            mysql - mysqli_escape_string int - intval float - floatval bool - ($value) ? true : false string - "$value"; arratint - fix array values with intval
+	 * @param mixed       $value
+	 * @param string|null $with mysql - mysqli_escape_string int - intval float - floatval bool - ($value) ? true : false string - "$value"; arratint - fix array values with intval
+	 * @throws Error
+	 * @return mixed
 	 */
-	public static function valueWith($value, $with = false)
+	public static function valueWith($value, string $with = null)
 	{
 		if ($with)
 		{
@@ -106,8 +111,7 @@ class Fix
 							$value = trim($value);
 						break;
 						case "mysql" :
-							$value = Db::escape($value);
-						break;
+							throw new Error('is depereacated, use mysql_escape string instead');
 						case "int" :
 							$value = intval($value);
 						break;
@@ -127,8 +131,6 @@ class Fix
 							$value = ($value) ? 1 : 0;
 						break;
 						case "string" :
-							$value = "$value";
-						case "e" :
 							$value = "$value";
 						break;
 						case "urlname" :
@@ -311,7 +313,7 @@ class Fix
 	 * @param string $string
 	 * @return string
 	 */
-	public static function link($string)
+	public static function link(string $string)
 	{
 		$string = trim($string);
 		if (substr($string, 0, 4) != "http" and substr($string, 0, 3) != "ftp" and substr($string, 0, 6) != "mailto")
@@ -334,8 +336,10 @@ class Fix
 	/**
 	 * Fix and format price
 	 *
-	 * @param numeric $price
-	 * @param bool    $removeTenth
+	 * @param mixed $price
+	 * @param bool  $removeTenth
+	 * @param bool  $removeZeros
+	 * @return string|string[]
 	 */
 	public static function price($price, $removeTenth = true, $removeZeros = false)
 	{
@@ -353,8 +357,9 @@ class Fix
 	 *
 	 * @param string $date
 	 * @param string $time
+	 * @return string
 	 */
-	public static function dateTime($date, $time)
+	public static function dateTime(string $date, string $time)
 	{
 		if (trim($date))
 		{
@@ -401,6 +406,9 @@ class Fix
 	
 	/**
 	 * Add slash to end if neccessary
+	 *
+	 * @param $path
+	 * @return string|string[]
 	 */
 	public static function dirPath($path)
 	{
@@ -427,7 +435,7 @@ class Fix
 	/**
 	 * @param        $phone
 	 * @param string $countryCode
-	 * @param array  $allowedCountryCodes - https://countrycode.org/
+	 * @param array  $possibleCountryCodes
 	 * @return string|string[]|null
 	 */
 	public static function phone($phone, $countryCode = '', $possibleCountryCodes = [])

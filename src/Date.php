@@ -15,9 +15,9 @@ class Date
 	 * @param string $dateFormat - defaults to d.m.Y
 	 * @return string
 	 */
-	public static function toDate($date, $dateFormat = 'd.m.Y')
+	public static function toDate(string $date, string $dateFormat = 'd.m.Y')
 	{
-		if (strpos($dateFormat, "%") !== FALSE)
+		if (strpos($dateFormat, "%") !== false)
 		{
 			return strftime($dateFormat, self::toTime($date));
 		}
@@ -31,36 +31,36 @@ class Date
 	 * Get days,yeasr,hours,minutes,seconds from time
 	 *
 	 * @param string|int $str
-	 * @return stdClass
+	 * @return \stdClass
 	 */
 	public static function seconds2human($str)
 	{
-		$time = self::toTime($str);
-		$value = new \stdClass();
-		$value->years = 0;
-		$value->days = 0;
-		$value->hours = 0;
+		$time           = self::toTime($str);
+		$value          = new \stdClass();
+		$value->years   = 0;
+		$value->days    = 0;
+		$value->hours   = 0;
 		$value->minutes = 0;
 		$value->seconds = 0;
 		if ($time >= 31556926)
 		{
 			$value->years = floor($time / 31556926);
-			$time = ($time % 31556926);
+			$time         = ($time % 31556926);
 		}
 		if ($time >= 86400)
 		{
 			$value->days = floor($time / 86400);
-			$time = ($time % 86400);
+			$time        = ($time % 86400);
 		}
 		if ($time >= 3600)
 		{
 			$value->hours = floor($time / 3600);
-			$time = ($time % 3600);
+			$time         = ($time % 3600);
 		}
 		if ($time >= 60)
 		{
 			$value->minutes = floor($time / 60);
-			$time = ($time % 60);
+			$time           = ($time % 60);
 		}
 		$value->seconds = floor($time);
 		
@@ -74,11 +74,11 @@ class Date
 	 * @param string|int $now - use base time or string, defaults to now ($now is converted to time)
 	 * @return int - converted timestamp
 	 */
-	public static function toTime($time, $now = NULL)
+	public static function toTime($time, $now = null)
 	{
 		if (preg_match('/\D/i', $time))
 		{
-			$now = ($now === NULL) ? time() : self::toTime($now);
+			$now  = ($now === null) ? time() : self::toTime($now);
 			$time = strtotime($time, $now);
 		}
 		else
@@ -95,7 +95,7 @@ class Date
 	 * @param string $date
 	 * @return string - date H:i
 	 */
-	public static function toTimeNice($date)
+	public static function toTimeNice(string $date)
 	{
 		return self::toDate($date, "H:i");
 	}
@@ -106,7 +106,7 @@ class Date
 	 * @param string $date
 	 * @return string - date d.m.Y H:i:s
 	 */
-	public static function toDateTime($date)
+	public static function toDateTime(string $date)
 	{
 		return self::toDate($date, "d.m.Y H:i:s");
 	}
@@ -117,7 +117,7 @@ class Date
 	 * @param string $date
 	 * @return string - date Y-m-d
 	 */
-	public static function toSqlDate($date)
+	public static function toSqlDate(string $date)
 	{
 		return self::toDate($date, "Y-m-d");
 	}
@@ -128,7 +128,7 @@ class Date
 	 * @param string $date
 	 * @return string - date Y-m-d H:i:s
 	 */
-	public static function toSqlDateTime($date)
+	public static function toSqlDateTime(string $date)
 	{
 		return self::toDate($date, "Y-m-d H:i:s");
 	}
@@ -179,16 +179,16 @@ class Date
 	 * @param string $date - date or time
 	 * @return bool
 	 */
-	public static function isPast($date)
+	public static function isPast(string $date)
 	{
-		$now = time();
+		$now      = time();
 		$dateTime = self::toTime($date);
 		if ($dateTime < $now)
 		{
-			return TRUE;
+			return true;
 		}
 		
-		return FALSE;
+		return false;
 	}
 	
 	/**
@@ -199,14 +199,14 @@ class Date
 	 */
 	public static function isFuture($date)
 	{
-		$now = time();
+		$now      = time();
 		$dateTime = self::toTime($date);
 		if ($dateTime > $now)
 		{
-			return TRUE;
+			return true;
 		}
 		
-		return FALSE;
+		return false;
 	}
 	
 	/**
@@ -215,23 +215,24 @@ class Date
 	 * @param string $date - date or time
 	 * @return bool
 	 */
-	public static function isNow($date)
+	public static function isNow(string $date)
 	{
 		$dateTime = self::toTime($date);
 		if ($dateTime == time())
 		{
-			return TRUE;
+			return true;
 		}
 		
-		return FALSE;
+		return false;
 	}
 	
 	/**
 	 * Get last of the month date
-	 * @param string $date - date to time
+	 *
+	 * @param string|null $date - date to time
 	 * @return int
 	 */
-	public static function lastDayOfMonth($date = NULL)
+	public static function lastDayOfMonth(string $date = null)
 	{
 		$time = self::toTime($date);
 		
@@ -241,16 +242,17 @@ class Date
 	/**
 	 * Count days between daates
 	 * $ignore ignore day numbers like sunday = 7
+	 *
 	 * @param string|null $startDate - null means now
-	 * @param string|null $endDate - null means now
-	 * @param array $ignore
+	 * @param string|null $endDate   - null means now
+	 * @param array       $ignore
 	 * @return int
 	 */
-	public static function daysBetwewen($startDate = NULL, $endDate = NULL, $ignore = [])
+	public static function daysBetwewen($startDate = null, $endDate = null, $ignore = [])
 	{
-		$result = 0;
+		$result    = 0;
 		$startDate = self::toSqlDate($startDate);
-		$endDate = self::toSqlDate($endDate);
+		$endDate   = self::toSqlDate($endDate);
 		while ($startDate != $endDate)
 		{
 			$time = self::toTime($startDate);
@@ -266,21 +268,22 @@ class Date
 	
 	/**
 	 * Get array range with dates
-	 * @param $startDate - null means now
-	 * @param $endDate - null means now
-	 * @param string $step - how many time to add each step
-	 * @param string $format - format range item
+	 *
+	 * @param        $startDate - null means now
+	 * @param        $endDate   - null means now
+	 * @param string $step      - how many time to add each step
+	 * @param string $format    - format range item
 	 * @return array
 	 */
 	public static function range($startDate, $endDate, $step = '+1 day', $format = 'd.m.Y')
 	{
-		$dates = [];
+		$dates     = [];
 		$startDate = self::toTime($startDate);
-		$endDate = self::toTime($endDate);
+		$endDate   = self::toTime($endDate);
 		
 		while ($startDate <= $endDate)
 		{
-			if (is_object($format) && ($format instanceof Closure))
+			if (is_callable($format))
 			{
 				$val = $format($startDate);
 				if (is_object($val))
@@ -308,20 +311,21 @@ class Date
 	 * @param string $date
 	 * @return bool
 	 */
-	public static function is($date)
+	public static function is(string $date)
 	{
 		$dateTime = self::toSqlDate($date);
 		if ($dateTime == "1970-01-01")
 		{
-			return FALSE;
+			return false;
 		}
 		
-		return TRUE;
+		return true;
 	}
 	
 	/**
 	 * Check is variable valid timestamp
-	 * @param $timestamp
+	 *
+	 * @param string|int $timestamp
 	 * @return bool
 	 */
 	public static function isValidTimestamp($timestamp)

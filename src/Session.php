@@ -4,21 +4,21 @@ namespace Infira\Utils;
 
 class Session
 {
-	protected static $SID = FALSE;
+	protected static $SID = false;
 	
 	/**
 	 * Is session expired
 	 *
 	 * @var boolean
 	 */
-	private static $isExpired = FALSE;
+	private static $isExpired = false;
 	
 	/**
 	 * Is php session started withd session_start()
 	 *
 	 * @var bool
 	 */
-	public static $isStarted = FALSE;
+	public static $isStarted = false;
 	
 	private static $sessionName;
 	private static $timeout;
@@ -43,9 +43,9 @@ class Session
 		{
 			session_id($_GET["restoreSessionBySID"]);
 		}
-		if (self::$isStarted == FALSE)
+		if (self::$isStarted == false)
 		{
-			self::$isStarted = TRUE;
+			self::$isStarted = true;
 			if (ini_get('session.auto_start') != 1)
 			{
 				if (headers_sent())
@@ -67,12 +67,12 @@ class Session
 		$between = time() - $upTime;
 		if ($between > self::$timeout and $upTime > 0)
 		{
-			self::destroy(TRUE);
-			self::$isExpired = TRUE;
+			self::destroy(true);
+			self::$isExpired = true;
 		}
 		else
 		{
-			self::$isExpired = FALSE;
+			self::$isExpired = false;
 		}
 		self::set("_sessionUpdateTime", time());
 	}
@@ -102,7 +102,7 @@ class Session
 	 *
 	 * @param bool $takeNewID - take new session ID
 	 */
-	public static function destroy(bool $takeNewID = TRUE)
+	public static function destroy(bool $takeNewID = true)
 	{
 		self::flush();
 		session_unset();
@@ -117,7 +117,7 @@ class Session
 		//take new session ID
 		if ($takeNewID)
 		{
-			session_regenerate_id(TRUE);
+			session_regenerate_id(true);
 			$SID = session_id();
 			self::setSID($SID);
 		}
@@ -164,18 +164,18 @@ class Session
 			session_start();
 			self::setSessionCookie();
 			
-			return FALSE;
+			return false;
 		}
 		
 		if (!preg_match('/^[a-zA-Z0-9,\-]{22,40}$/', $sessid))
 		{
 			
-			return FALSE;
+			return false;
 		}
 		session_start();
 		self::setSessionCookie();
 		
-		return TRUE;
+		return true;
 	}
 	
 	private static function setSessionCookie()
@@ -192,25 +192,15 @@ class Session
 	/**
 	 * Get value from session, if this cache is true
 	 *
-	 * @param string $name    - get value by $name, if null all session values are returned
-	 * @param mixed  $default - if the var is not found this variable value is returned
-	 * @return unknown
+	 * @param string|null $name    - get value by $name, if null all session values are returned
+	 * @param mixed       $default - if the var is not found this variable value is returned
+	 * @return mixed
 	 */
-	public static function get($name = NULL, $default = FALSE)
+	public static function get(string $name = null, $default = false)
 	{
-		if ($name == NULL)
+		if ($name == null)
 		{
 			return $_SESSION;
-		}
-		if (checkArray($name))
-		{
-			$output = [];
-			foreach ($name as $key)
-			{
-				$output[$key] = self::get($key);
-			}
-			
-			return $output;
 		}
 		if (self::exists($name))
 		{
@@ -250,7 +240,7 @@ class Session
 	 * @param string $name
 	 * @return bool
 	 */
-	public static function exists($name): bool
+	public static function exists(string $name): bool
 	{
 		return array_key_exists($name, $_SESSION);
 	}
