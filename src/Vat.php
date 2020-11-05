@@ -10,12 +10,19 @@ class Vat
 	 * @param null $vatPercent
 	 * @return float|int
 	 */
-	private static function getPercent($vatPercent = NULL)
+	private static function getPercent($vatPercent = null)
 	{
 		$vatP = $vatPercent;
-		if ($vatP === NULL)
+		if ($vatP === null)
 		{
-			$vatP = VatPercent::getVatPercent();
+			if (defined('GLOBAL_VAT_PERCENT'))
+			{
+				$vatP = GLOBAL_VAT_PERCENT;
+			}
+			else
+			{
+				$vatP = 20;
+			}
 		}
 		
 		return ($vatP / 100) + 1;
@@ -30,10 +37,10 @@ class Vat
 	 * @param int|float|null $vatPercent        - percent of vat, if null then default is used
 	 * @return float|int
 	 */
-	public static function get($amount, $amountContainsVat, $vatPercent = NULL)
+	public static function get($amount, $amountContainsVat, $vatPercent = null)
 	{
 		$amount = floatval($amount);
-		if ($amountContainsVat == TRUE)
+		if ($amountContainsVat == true)
 		{
 			$output = $amount - ($amount / self::getPercent($vatPercent));
 		}
@@ -53,9 +60,9 @@ class Vat
 	 * @param int|float|null $vatPercent - percent of vat, if null then default is used
 	 * @return int|float
 	 */
-	public static function add($net, $vatPercent = NULL)
+	public static function add($net, $vatPercent = null)
 	{
-		return $net + self::get($net, FALSE, $vatPercent);
+		return $net + self::get($net, false, $vatPercent);
 	}
 	
 	/**
@@ -65,9 +72,9 @@ class Vat
 	 * @param int|float|null $vatPercent - percent of vat, if null then default is used
 	 * @return int|float
 	 */
-	public static function remove($gross, $vatPercent = NULL)
+	public static function remove($gross, $vatPercent = null)
 	{
-		return $gross - self::get($gross, TRUE, $vatPercent);
+		return $gross - self::get($gross, true, $vatPercent);
 	}
 }
 
