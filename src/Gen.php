@@ -147,8 +147,13 @@ class Gen
 		return $key;
 	}
 	
-	public static function htmlParams($string)
+	public static function htmlParams(string $string = null): array
 	{
+		if (!$string)
+		{
+			return [];
+		}
+		
 		return parseStr($string);
 		
 	}
