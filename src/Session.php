@@ -258,7 +258,7 @@ class Session
 	 *
 	 * @return bool
 	 */
-	public static function isIsExpired(): bool
+	public static function isExpired(): bool
 	{
 		return self::$isExpired;
 	}
