@@ -2,76 +2,39 @@
 
 
 require_once 'config.php';
-require_once '../src/Facade.php';
 require_once '../src/ClassFarm.php';
+require_once '../src/Facade.php';
 
-class FacadeTest
+class TestFacadeInstance
 {
-	public function send()
+	public function __construct()
 	{
-		echo get_class($this) . " did stuff<br />";
-	}
-}
-
-class SmsUtil
-{
-	public function __construct(string $welcome)
-	{
-		echo "Sms class constructed and says:" . $welcome . "<br />";
+		echo 'TestFacadeInstance constructed<br />';
 	}
 	
-	public function send()
+	public function sayHello()
 	{
-		echo get_class($this) . " did stuff<br />";
+		echo "Hello world!";
 	}
 }
 
 /**
- * Class myTestClass
- *
- * @property EmailUtil $Email;
- * @property SmsUtil   $Sms  ;
+ * Class TestFacade
+ * @method void sayHello
  */
-class UtilsGeneral extends \Infira\Utils\MagicClass
+class TestFacade extends \Infira\Utils\Facade
 {
-	public function __construct()
+	static protected function getInstanceConfig(): array
 	{
-		parent::setChainName("Utils");
-		$subClasses          = [];
-		$subClasses["Email"] = "EmailUtil";
-		$subClasses["Sms"]   = function ()
+		return ['name' => 'TestFacadeInstance', 'constructor' => function ()
 		{
-			return new SmsUtil("hellow");
-		};
-		parent::registerProperties($subClasses);
+			return new TestFacadeInstance();
+		}];
 	}
 }
 
-class RandomSubClass
-{
-	public function doStuff()
-	{
-		echo "just did stuff";
-	}
-}
 
-/**
- * Class ApplicationController
- *
- * @property UtilsGeneral   $Utils
- * @property RandomSubClass $Random
- */
-class MyApp extends \Infira\Utils\MagicClass
-{
-	public function __construct()
-	{
-		parent::registerPropertyClass("Utils", "UtilsGeneral");
-		parent::registerPropertyClass("Random", "RandomSubClass");
-	}
-}
+TestFacade::sayHello();
 
-$App = new MyApp();
-$App->Utils->Email->send();
-$App->Utils->Sms->send();
-$App->Random->doStuff();
+?>
 

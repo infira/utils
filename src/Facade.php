@@ -12,16 +12,22 @@ abstract class Facade
 {
 	public static function __callStatic($method, $args)
 	{
-		return self::getInstance(static::getInstanceConfig())->$method(...$args);
+		$config = static::getInstanceConfig();
+		
+		return self::getInstance($config['name'], $config['constructor'])->$method(...$args);
 	}
 	
-	protected static function getInstance(array $instanceConfig)
+	/**
+	 * @param string          $name
+	 * @param string|callable $constructor - a class name or callable method what returns objects
+	 * @throws Error
+	 * @return object|null
+	 */
+	protected static function getInstance(string $name, $constructor)
 	{
-		foreach ($instanceConfig as $property => $constructor)
-		{
-			return ClassFarm::instance($property, $constructor);
-		}
+		return ClassFarm::instance($name, $constructor);
 	}
 	
 	static abstract protected function getInstanceConfig(): array;
+	
 }
