@@ -32,34 +32,25 @@ class Session
 	 */
 	public static function init(string $sessionName = "PHPSESSID", $timeout = 86400)
 	{
+		if ($sessionName !== 'PHPSESSID')
+		{
+			$sessionName = "PHPSESSID_$sessionName";
+		}
 		self::$sessionName = $sessionName;
 		self::$timeout     = $timeout;
-		if (defined("USE_SESSION_NAME"))
-		{
-			self::$sessionName = "SESSION_NAME_" . USE_SESSION_NAME;
-		}
-		
-		if (isset($_GET["restoreSessionBySID"]))
-		{
-			session_id($_GET["restoreSessionBySID"]);
-		}
 		if (self::$isStarted == false)
 		{
 			self::$isStarted = true;
-			if (ini_get('session.auto_start') != 1)
+			if (ini_get('session.auto_start') == 0)
 			{
 				if (headers_sent())
 				{
 					debug_print_backtrace();
 				}
-				if (self::$sessionName)
-				{
-					session_name(self::$sessionName);
-					session_set_cookie_params(self::$sessionTime);
-				}
 				self::start();
 			}
 		}
+		//debug('session_id()', session_id());
 		self::setSID(session_id());
 		
 		
@@ -74,6 +65,9 @@ class Session
 		{
 			self::$isExpired = false;
 		}
+		//debug(self::$sessionName);
+		//debug($_SESSION);
+		//debug("------------------------------------------------");
 		self::set("_sessionUpdateTime", time());
 	}
 	
@@ -135,7 +129,7 @@ class Session
 	 */
 	private static function start()
 	{
-		$sn = session_name();
+		$sn = self::$sessionName;
 		if (isset($_COOKIE[$sn]))
 		{
 			$sessid = $_COOKIE[$sn];
@@ -155,25 +149,26 @@ class Session
 				}
 			}
 		}
-		elseif (isset($_GET[$sn]))
+		if (isset($sessid))
 		{
-			$sessid = $_GET[$sn];
+			session_id($sessid);
 		}
-		else
+		if (self::$sessionName)
 		{
-			session_start();
-			self::setSessionCookie();
-			
-			return false;
+			session_name(self::$sessionName);
 		}
+		session_set_cookie_params(self::$sessionTime);
+		session_start();
+		self::setSessionCookie();
 		
+		/*
 		if (!preg_match('/^[a-zA-Z0-9,\-]{22,40}$/', $sessid))
 		{
-			
 			return false;
 		}
 		session_start();
 		self::setSessionCookie();
+		*/
 		
 		return true;
 	}
