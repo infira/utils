@@ -139,7 +139,7 @@ class Dir
 			{
 				foreach ($exlude as $ex)
 				{
-					if ($ex{0} == "/")
+					if ($ex[0] == "/")
 					{
 						$gr = preg_grep($ex, $r);
 						if (checkArray($gr))

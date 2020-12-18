@@ -57,7 +57,7 @@ class Cookie
 			}
 			elseif (is_string($expires))
 			{
-				if ($expires{0} != "+")
+				if ($expires[0] != "+")
 				{
 					$expires = "+$expires";
 				}

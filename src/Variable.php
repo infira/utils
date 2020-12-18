@@ -74,7 +74,7 @@ class Variable
 		{
 			$ll = $len - 1;
 			
-			return $str{$ll};
+			return $str[$ll];
 		}
 		
 		return null;
@@ -604,7 +604,7 @@ class Variable
 	 */
 	public static function lcFirst(string $var)
 	{
-		$r = self::toLower($var{0});
+		$r = self::toLower($var[0]);
 		if (strlen($var) > 0)
 		{
 			$r .= substr($var, 1);
@@ -679,7 +679,7 @@ class Variable
 		{
 			$voidTags = "";
 		}
-		if (is_string($voidTags) and strlen($voidTags) > 0 and $voidTags{0} != "<")
+		if (is_string($voidTags) and strlen($voidTags) > 0 and $voidTags[0] != "<")
 		{
 			$voidTags = Variable::toArray($voidTags);
 		}

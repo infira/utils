@@ -420,7 +420,7 @@ class Fix
 			}
 			$path = str_replace("/", DIRECTORY_SEPARATOR, $path);
 			$len  = strlen($path) - 1;
-			if ($path{$len} != DIRECTORY_SEPARATOR and !is_file($path))
+			if ($path[$len] != DIRECTORY_SEPARATOR and !is_file($path))
 			{
 				$path .= DIRECTORY_SEPARATOR;
 			}
@@ -467,7 +467,7 @@ class Fix
 			}
 			else
 			{
-				if ($tmpPhone{0} == "+")
+				if ($tmpPhone[0] == "+")
 				{
 					$phone = "+" . $countryCode . $phone;
 				}

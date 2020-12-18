@@ -394,7 +394,7 @@ class Http
 	{
 		$link = str_replace('&amp;', '&', $link);
 		$llen = strlen($link) - 1;
-		if ($link{$llen} == "/")
+		if ($link[$llen] == "/")
 		{
 			$link = substr($link, 0, $llen);
 		}

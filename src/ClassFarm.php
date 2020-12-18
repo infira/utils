@@ -139,7 +139,7 @@ final class ClassFarm
 	 * Protected constructor to prevent creating a new instance of the
 	 * *Singleton* via the `new` operator from outside of this class.
 	 */
-	protected function __construct() { }
+	public function __construct() { }
 	
 	/**
 	 * Private clone method to prevent cloning of the instance of the
@@ -147,7 +147,7 @@ final class ClassFarm
 	 *
 	 * @return void
 	 */
-	private function __clone() { }
+	public function __clone() { }
 	
 	/**
 	 * Private unserialize method to prevent unserializing of the *Singleton*
@@ -155,7 +155,7 @@ final class ClassFarm
 	 *
 	 * @return void
 	 */
-	private function __wakeup() { }
+	public function __wakeup() { }
 }
 
 ?>
