@@ -2,6 +2,8 @@
 
 namespace Infira\Utils;
 
+use stdClass;
+
 /**
  * This class handles date strings
  */
@@ -15,7 +17,7 @@ class Date
 	 * @param string $dateFormat - defaults to d.m.Y
 	 * @return string
 	 */
-	public static function toDate(string $date, string $dateFormat = 'd.m.Y')
+	public static function toDate(string $date, string $dateFormat = 'd.m.Y'): string
 	{
 		if (strpos($dateFormat, "%") !== false)
 		{
@@ -31,12 +33,12 @@ class Date
 	 * Get days,yeasr,hours,minutes,seconds from time
 	 *
 	 * @param string|int $str
-	 * @return \stdClass
+	 * @return stdClass
 	 */
-	public static function seconds2human($str)
+	public static function seconds2human($str): stdClass
 	{
 		$time           = self::toTime($str);
-		$value          = new \stdClass();
+		$value          = new stdClass();
 		$value->years   = 0;
 		$value->days    = 0;
 		$value->hours   = 0;
@@ -74,7 +76,7 @@ class Date
 	 * @param string|int $now - use base time or string, defaults to now ($now is converted to time)
 	 * @return int - converted timestamp
 	 */
-	public static function toTime($time, $now = null)
+	public static function toTime($time, $now = null): int
 	{
 		if (preg_match('/\D/i', $time))
 		{
@@ -90,14 +92,14 @@ class Date
 	}
 	
 	/**
-	 * Convert to time with format H:i
+	 * Convert to time with format H:i:s
 	 *
 	 * @param string $date
-	 * @return string - date H:i
+	 * @return string - date H:i:s
 	 */
-	public static function toTimeNice(string $date)
+	public static function toTimeNice(string $date): string
 	{
-		return self::toDate($date, "H:i");
+		return self::toDate($date, "H:i:s");
 	}
 	
 	/**
@@ -106,7 +108,7 @@ class Date
 	 * @param string $date
 	 * @return string - date d.m.Y H:i:s
 	 */
-	public static function toDateTime(string $date)
+	public static function toDateTime(string $date): string
 	{
 		return self::toDate($date, "d.m.Y H:i:s");
 	}
@@ -117,7 +119,7 @@ class Date
 	 * @param string $date
 	 * @return string - date Y-m-d
 	 */
-	public static function toSqlDate(string $date)
+	public static function toSqlDate(string $date): string
 	{
 		return self::toDate($date, "Y-m-d");
 	}
@@ -128,7 +130,7 @@ class Date
 	 * @param string $date
 	 * @return string - date Y-m-d H:i:s
 	 */
-	public static function toSqlDateTime(string $date)
+	public static function toSqlDateTime(string $date): string
 	{
 		return self::toDate($date, "Y-m-d H:i:s");
 	}
@@ -138,7 +140,7 @@ class Date
 	 *
 	 * @return string - date d.m.Y
 	 */
-	public static function nowDate()
+	public static function nowDate(): string
 	{
 		return self::toDate(time(), "d.m.Y");
 	}
@@ -148,9 +150,9 @@ class Date
 	 *
 	 * @return string - date d.m.Y H:i:s
 	 */
-	public static function nowDateTime()
+	public static function nowDateTime(): string
 	{
-		return self::toDateTime(time(), "d.m.Y H:i:s");
+		return self::toDate(time(), "d.m.Y H:i:s");
 	}
 	
 	/**
@@ -158,7 +160,7 @@ class Date
 	 *
 	 * @return string - date Y-m-d
 	 */
-	public static function nowSqlDate()
+	public static function nowSqlDate(): string
 	{
 		return self::toSqlDate(time());
 	}
@@ -168,7 +170,7 @@ class Date
 	 *
 	 * @return string - date Y-m-d H:i:s
 	 */
-	public static function nowSqlDateTime()
+	public static function nowSqlDateTime(): string
 	{
 		return self::toSqlDateTime(time());
 	}
@@ -179,7 +181,7 @@ class Date
 	 * @param string $date - date or time
 	 * @return bool
 	 */
-	public static function isPast(string $date)
+	public static function isPast(string $date): bool
 	{
 		$now      = time();
 		$dateTime = self::toTime($date);
@@ -197,7 +199,7 @@ class Date
 	 * @param string $date - date or time
 	 * @return bool
 	 */
-	public static function isFuture($date)
+	public static function isFuture($date): bool
 	{
 		$now      = time();
 		$dateTime = self::toTime($date);
@@ -215,7 +217,7 @@ class Date
 	 * @param string $date - date or time
 	 * @return bool
 	 */
-	public static function isNow(string $date)
+	public static function isNow(string $date): bool
 	{
 		$dateTime = self::toTime($date);
 		if ($dateTime == time())
@@ -232,7 +234,7 @@ class Date
 	 * @param string|null $date - date to time
 	 * @return int
 	 */
-	public static function lastDayOfMonth(string $date = null)
+	public static function lastDayOfMonth(string $date = null): int
 	{
 		$time = self::toTime($date);
 		
@@ -248,7 +250,7 @@ class Date
 	 * @param array       $ignore
 	 * @return int
 	 */
-	public static function daysBetwewen($startDate = null, $endDate = null, $ignore = [])
+	public static function daysBetwewen($startDate = null, $endDate = null, $ignore = []): int
 	{
 		$result    = 0;
 		$startDate = self::toSqlDate($startDate);
@@ -275,7 +277,7 @@ class Date
 	 * @param string $format    - format range item
 	 * @return array
 	 */
-	public static function range($startDate, $endDate, $step = '+1 day', $format = 'd.m.Y')
+	public static function range($startDate, $endDate, $step = '+1 day', $format = 'd.m.Y'): array
 	{
 		$dates     = [];
 		$startDate = self::toTime($startDate);
@@ -311,7 +313,7 @@ class Date
 	 * @param string $date
 	 * @return bool
 	 */
-	public static function is(string $date)
+	public static function is(string $date): bool
 	{
 		$dateTime = self::toSqlDate($date);
 		if ($dateTime == "1970-01-01")
@@ -328,7 +330,7 @@ class Date
 	 * @param string|int $timestamp
 	 * @return bool
 	 */
-	public static function isValidTimestamp($timestamp)
+	public static function isValidTimestamp($timestamp):bool
 	{
 		return (ctype_digit($timestamp) && strtotime(date('Y-m-d H:i:s', $timestamp)) === (int)$timestamp);
 	}
