@@ -27,17 +27,6 @@ function parseStr(string $string): array
 	return $data;
 }
 
-function isAjaxRequest()
-{
-	if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
-	{
-		return true;
-	}
-	
-	return false;
-}
-
-
 //https://stackoverflow.com/questions/3003145/how-to-get-the-client-ip-address-in-php
 function getUserIP()
 {
@@ -174,6 +163,10 @@ function callback($callback, $scope = false, $params = [])
 			return call_user_func_array($callback, $params);
 		}
 	}
+	elseif (is_array($callback))
+	{
+		return call_user_func_array($callback, $params);
+	}
 	elseif (is_closure($callback))
 	{
 		if ($scope)
@@ -240,7 +233,8 @@ function debug()
 	$GLOBALS["debugIsActive"] = true;
 	$args                     = func_get_args();
 	$html                     = "";
-	if (isAjaxRequest())
+	$isAjax                   = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+	if ($isAjax)
 	{
 		$html = "[DEBUG_MSG].\n";
 	}
@@ -267,7 +261,7 @@ function debug()
 		exit;
 	}
 	echo($html);
-	if (isAjaxRequest())
+	if ($isAjax)
 	{
 		exit();
 	}

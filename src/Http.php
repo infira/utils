@@ -372,11 +372,32 @@ class Http
 	}
 	
 	/**
-	 * Returns is the current request is ajax
+	 * is current request ajax type
+	 *
+	 * @return bool
 	 */
 	public static function isAjax()
 	{
 		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Does current request accept json
+	 *
+	 * @return bool
+	 */
+	public static function acceptJSON(): bool
+	{
+		if (!isset($_SERVER['HTTP_ACCEPT']))
+		{
+			return false;
+		}
+		if (strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)
 		{
 			return true;
 		}
