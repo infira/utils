@@ -67,7 +67,7 @@ class Variable
 	 * @param string
 	 * @return null|string
 	 */
-	public static function lastChar(string $str)
+	public static function lastChar(string $str): ?string
 	{
 		$len = strlen($str);
 		if ($len > 0)
@@ -88,7 +88,7 @@ class Variable
 	 * @param array|null $defaultVars
 	 * @return mixed|string|string[] $string
 	 */
-	public static function assign(array $vars, string $string, array $defaultVars = null)
+	public static function assign(array $vars, string $string, array $defaultVars = null): string
 	{
 		if (is_string($vars))
 		{
@@ -103,7 +103,7 @@ class Variable
 		}
 		if ($defaultVars)
 		{
-			$string = self::assign($defaultVars, $string, false);
+			$string = self::assign($defaultVars, $string, null);
 		}
 		
 		return $string;
@@ -117,7 +117,7 @@ class Variable
 	 * @param string $caseStringExplodeDelim - if the $var type is string then string is exploded to this param delimiter
 	 * @return array
 	 */
-	public static function toArray($var, $recursive = false, $caseStringExplodeDelim = ",")
+	public static function toArray($var, bool $recursive = false, string $caseStringExplodeDelim = ","): array
 	{
 		if ($recursive == false)
 		{
@@ -184,31 +184,23 @@ class Variable
 		}
 	}
 	
-	public static function toIntArray($var, $recursive = false, $caseStringExplodeDelim = ",")
+	public static function toIntArray($var, bool $recursive = false, string $caseStringExplodeDelim = ","): array
 	{
-		$arr    = self::toArray($var, $recursive, $caseStringExplodeDelim);
-		$newArr = [];
+		$arr = self::toArray($var, $recursive, $caseStringExplodeDelim);
 		array_walk($arr, function (&$value, $key) use (&$newArr)
 		{
-			$newArr[$key] = intval($value);
+			$value = intval($value);
 		});
 		
-		return $newArr;
+		return $arr;
 	}
 	
-	public static function toArrayHasValue($var, $recursive = false, $caseStringExplodeDelim = ",")
+	public static function removeEmptyArrayItems(array $arr): array
 	{
-		$arr    = self::toArray($var, $recursive, $caseStringExplodeDelim);
-		$newArr = [];
-		array_walk($arr, function (&$value, $key) use (&$newArr)
+		$arr = array_filter($arr, function ($item)
 		{
-			if ($value)
-			{
-				$newArr[$key] = $value;
-			}
+			return !empty($item);
 		});
-		
-		return $newArr;
 	}
 	
 	/**
@@ -218,7 +210,7 @@ class Variable
 	 * @param string $surrounding
 	 * @return array
 	 */
-	public static function addSurroundinsToArrayEl(array $array, $surrounding = "'")
+	public static function addSurroundinsToArrayEl(array $array, string $surrounding = "'"): array
 	{
 		if (checkArray($array))
 		{
@@ -231,78 +223,14 @@ class Variable
 		return $array;
 	}
 	
-	public static function __toArrayOld($var, $recursive = false, $caseStringExplodeDelim = ",")
-	{
-		if (is_array($var))
-		{
-			$r = $var;
-		}
-		elseif (is_object($var))
-		{
-			$r = get_object_vars($var);
-		}
-		elseif (is_string($var) or is_int($var) or is_numeric($var))
-		{
-			$ex = explode($caseStringExplodeDelim, "$var");
-			$r  = [];
-			if (checkArray($ex))
-			{
-				foreach ($ex as $v)
-				{
-					$v = trim($v);
-					if ($v)
-					{
-						$r[] = $v;
-					}
-				}
-			}
-		}
-		else
-		{
-			$r = [];
-		}
-		if (count($r) > 0 and $recursive == true)
-		{
-			foreach ($r as $key => $val)
-			{
-				if (is_object($val))
-				{
-					$r[$key] = self::__toArrayOld($val, true);
-				}
-				elseif (is_array($val))
-				{
-					$r[$key] = [];
-					foreach ($val as $k => $v)
-					{
-						if (is_object($v) or is_array($v))
-						{
-							$r[$key] = self::__toArrayOld($val, true);
-						}
-						else
-						{
-							$r[$key][$k] = $v;
-						}
-					}
-				}
-				else
-				{
-					$r[$key] = $val;
-				}
-			}
-		}
-		
-		return $r;
-	}
-	
 	/**
 	 * Array to stc class object
 	 *
 	 * @param mixed $var
-	 * @param bool  $recursive
-	 *            The array("name"=>"gen") result should be Object->name = "gen"
+	 * @param bool  $recursive The array("name"=>"gen") result should be Object->name = "gen"
 	 * @return stdClass
 	 */
-	public static function toObject($var, $recursive = false)
+	public static function toObject($var, bool $recursive = false): stdClass
 	{
 		if (is_object($var))
 		{
@@ -332,30 +260,12 @@ class Variable
 	}
 	
 	/**
-	 * Array to array containg std objects
-	 *
-	 * @param mixed $var
-	 * @param bool  $recursive
-	 *            The array("name"=>"gen") result should be Object->name = "gen"
-	 * @return stdClass
-	 */
-	public static function toObjectArray($var, $recursive = false)
-	{
-		foreach ($var as $key => $val)
-		{
-			$var[$key] = self::toObject($val, $recursive);
-		}
-		
-		return $var;
-	}
-	
-	/**
 	 * Convert data to string
 	 *
 	 * @param mixed $var
 	 * @return string
 	 */
-	public static function toString($var)
+	public static function toString($var): string
 	{
 		return (string)$var;
 	}
@@ -366,7 +276,7 @@ class Variable
 	 * @param mixed $var
 	 * @return string
 	 */
-	public static function boolToString($var)
+	public static function boolToString($var): string
 	{
 		if ($var === true)
 		{
@@ -387,7 +297,7 @@ class Variable
 	 * @param bool  $parseAlsoString
 	 * @return bool
 	 */
-	public static function toBool($var, $parseAlsoString = false)
+	public static function toBool($var, bool $parseAlsoString = false): bool
 	{
 		if ($parseAlsoString == true)
 		{
@@ -409,20 +319,18 @@ class Variable
 	 * Coneverts variable to boolean value
 	 *
 	 * @param mixed $var
-	 * @return bool
+	 * @return int
 	 */
-	public static function toBoolInt($var)
+	public static function toBoolInt($var): int
 	{
-		$var = self::toBool($var);
-		
-		return ($var) ? 1 : 0;
+		return self::toBool($var) ? 1 : 0;
 	}
 	
 	/**
 	 * Converts variable value to numeric value
 	 *
 	 * @param mixed $val
-	 * @return mixed
+	 * @return float|int
 	 */
 	public static function toNumber($val)
 	{
@@ -438,17 +346,31 @@ class Variable
 		}
 	}
 	
-	public static function roundUpAny($value, $modBase = 5)
+	/**
+	 * @param float|int $value
+	 * @param int       $modBase
+	 * @return float|int
+	 */
+	public static function roundUpAny($value, int $modBase = 5)
 	{
 		return ceil($value / $modBase) * $modBase;
 	}
 	
+	/**
+	 * @param float|int $n
+	 * @return float|int
+	 */
 	public static function roundUpTo5Cents($n)
 	{
 		return self::roundUpAny($n, 0.05);
 	}
 	
-	public static function truncateNumber($number, $precision = 2)
+	/**
+	 * @param float|int $number
+	 * @param int       $precision
+	 * @return float|int
+	 */
+	public static function truncateNumber($number, int $precision = 2)
 	{
 		// Zero causes issues, and no need to truncate
 		if (0 == (int)$number)
@@ -491,7 +413,7 @@ class Variable
 	 * Conver number to negative
 	 *
 	 * @param $number
-	 * @return number
+	 * @return float|int
 	 */
 	public static function toNegative($number)
 	{
@@ -501,8 +423,8 @@ class Variable
 	/**
 	 * Convert number to positive
 	 *
-	 * @param $number
-	 * @return number
+	 * @param float|int $number
+	 * @return float|int
 	 */
 	public static function toPositive($number)
 	{
@@ -512,18 +434,18 @@ class Variable
 	/**
 	 * Converts value to unix timestamp
 	 *
-	 * @param mixed $str
+	 * @param float|int|string $var
 	 * @return int
 	 */
-	public static function toTime($str)
+	public static function toTime($var): int
 	{
-		if (is_int($str))
+		if (is_int($var))
 		{
-			return $str;
+			return $var;
 		}
 		else
 		{
-			return strtotime($str);
+			return strtotime($var);
 		}
 	}
 	
@@ -533,12 +455,12 @@ class Variable
 	 * @param string $string
 	 * @return string
 	 */
-	public static function toPrefex(string $string)
+	public static function toPrefex(string $string): string
 	{
 		return "/" . $string . "/";
 	}
 	
-	public static function capitalize($string)
+	public static function capitalize(string $string): string
 	{
 		$ex = explode(" ", $string);
 		if (checkArray($ex))
@@ -558,7 +480,7 @@ class Variable
 	 * @param string $var
 	 * @return string
 	 */
-	public static function toUpper(string $var)
+	public static function toUpper(string $var): string
 	{
 		return mb_convert_case($var, MB_CASE_UPPER, "UTF-8");
 	}
@@ -569,7 +491,7 @@ class Variable
 	 * @param string $var
 	 * @return string
 	 */
-	public static function toCamelCase(string $var)
+	public static function toCamelCase(string $var): string
 	{
 		// -|_
 		if (Regex::getMatch('/-|_/', $var))
@@ -591,7 +513,7 @@ class Variable
 	 * @param string $var
 	 * @return string
 	 */
-	public static function toLower(string $var)
+	public static function toLower(string $var): string
 	{
 		return mb_convert_case($var, MB_CASE_LOWER, "UTF-8");
 	}
@@ -602,7 +524,7 @@ class Variable
 	 * @param string $var
 	 * @return string
 	 */
-	public static function lcFirst(string $var)
+	public static function lcFirst(string $var): string
 	{
 		$r = self::toLower($var[0]);
 		if (strlen($var) > 0)
@@ -616,11 +538,11 @@ class Variable
 	/**
 	 * Convert string to lower case
 	 *
-	 * @param        $string
+	 * @param string $string
 	 * @param string $encoding
 	 * @return string
 	 */
-	public static function ucFirst($string, $encoding = 'UTF-8')
+	public static function ucFirst(string $string, $encoding = 'UTF-8'): string
 	{
 		$firstChar = mb_substr($string, 0, 1, $encoding);
 		$then      = mb_substr($string, 1, mb_strlen($string, $encoding) - 1, $encoding);
@@ -634,7 +556,7 @@ class Variable
 	 * @param string $string
 	 * @return string
 	 */
-	public static function toASCII(string $string)
+	public static function toASCII(string $string): string
 	{
 		$string = trim($string);
 		// return mb_convert_encoding($string, 'UTF-8');
@@ -653,7 +575,7 @@ class Variable
 	 * @param string $string
 	 * @return string
 	 */
-	public static function toUTF8(string $string)
+	public static function toUTF8(string $string): string
 	{
 		$string = trim($string);
 		// return mb_convert_encoding($string, 'UTF-8');
@@ -673,7 +595,7 @@ class Variable
 	 * @param null|string|array $voidTags
 	 * @return string
 	 */
-	public static function htmlToText(string $str, $voidTags = null)
+	public static function htmlToText(string $str, $voidTags = null): string
 	{
 		if ($voidTags === false)
 		{
@@ -685,9 +607,9 @@ class Variable
 		}
 		if (checkArray($voidTags))
 		{
-			$voidTags = eachArray($voidTags, function ($key, $item)
+			array_walk($voidTags, function (&$item)
 			{
-				return '<' . $item . '>';
+				$item = '<' . $item . '>';
 			});
 			$voidTags = join("", $voidTags);
 		}
@@ -698,55 +620,12 @@ class Variable
 	/**
 	 * Converts to megabytes
 	 *
-	 * @param $var
+	 * @param float|int $var
 	 * @return float|int
 	 */
 	public static function toMB($var)
 	{
 		return $var / 1048576;
-	}
-	
-	public static function getObjArrValue($obj, $name, $error = false)
-	{
-		if (is_array($obj))
-		{
-			if ($error !== false and !isset($obj[$name]))
-			{
-				throw new Error("Variable::getObjArrValue ei leitud '$name'");
-			}
-			
-			return $obj[$name];
-		}
-		elseif (is_object($obj))
-		{
-			if ($error !== false and !isset($obj->$name))
-			{
-				throw new Error("Variable::getObjArrValue ei leitud '$name'");
-			}
-			
-			return $obj->$name;
-		}
-		
-		return $obj;
-	}
-	
-	public static function urlEncode($string)
-	{
-		/*
-		 * urlencode function and rawurlencode are mostly based on RFC 1738. However, since 2005 the current RFC in use for URIs standard is RFC 3986. Here is a function to encode URLs according to RFC 3986.
-		 */
-		$entities     = ['%21', '%2A', '%27', '%28', '%29', '%3B', '%3A', '%40', '%26', '%3D', '%2B', '%24', '%2C', '%2F', '%3F', '%25', '%23', '%5B', '%5D'];
-		$replacements = ['!', '*', "'", "(", ")", ";", ":", "@", "&", "=", "+", "$", ",", "/", "?", "%", "#", "[", "]"];
-		
-		return str_replace($entities, $replacements, urlencode($string));
-	}
-	
-	public static function urlDecode($string)
-	{
-		$replacements = ['%21', '%2A', '%27', '%28', '%29', '%3B', '%3A', '%40', '%26', '%3D', '%2B', '%24', '%2C', '%2F', '%3F', '%25', '%23', '%5B', '%5D'];
-		$entities     = ['!', '*', "'", "(", ")", ";", ":", "@", "&", "=", "+", "$", ",", "/", "?", "%", "#", "[", "]"];
-		
-		return str_replace($entities, $replacements, urlencode($string));
 	}
 }
 
