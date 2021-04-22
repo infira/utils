@@ -347,30 +347,30 @@ class Variable
 	}
 	
 	/**
-	 * @param float|int $value
-	 * @param int       $modBase
+	 * @param numeric $value
+	 * @param numeric $modBase
 	 * @return float|int
 	 */
-	public static function roundUpAny($value, float $modBase = 5)
+	public static function roundUpAny(float $value, float $modBase = 5)
 	{
 		return ceil($value / $modBase) * $modBase;
 	}
 	
 	/**
-	 * @param float|int $n
-	 * @return float|int
+	 * @param numeric $n
+	 * @return numeric
 	 */
-	public static function roundUpTo5Cents($n)
+	public static function roundUpTo5Cents(float $n)
 	{
 		return self::roundUpAny($n, 0.05);
 	}
 	
 	/**
-	 * @param float|int $number
-	 * @param int       $precision
+	 * @param numeric $number
+	 * @param int     $precision
 	 * @return float|int
 	 */
-	public static function truncateNumber($number, int $precision = 2)
+	public static function truncateNumber(float $number, int $precision = 2)
 	{
 		// Zero causes issues, and no need to truncate
 		if (0 == (int)$number)
@@ -412,10 +412,10 @@ class Variable
 	/**
 	 * Conver number to negative
 	 *
-	 * @param $number
-	 * @return float|int
+	 * @param numeric $number
+	 * @return numeric
 	 */
-	public static function toNegative($number)
+	public static function toNegative(float $number)
 	{
 		return self::toNumber("-" . abs($number));
 	}
@@ -423,10 +423,10 @@ class Variable
 	/**
 	 * Convert number to positive
 	 *
-	 * @param float|int $number
-	 * @return float|int
+	 * @param numeric $number
+	 * @return numeric
 	 */
-	public static function toPositive($number)
+	public static function toPositive(float $number)
 	{
 		return abs($number);
 	}
@@ -434,7 +434,7 @@ class Variable
 	/**
 	 * Converts value to unix timestamp
 	 *
-	 * @param float|int|string $var
+	 * @param numeric|string $var
 	 * @return int
 	 */
 	public static function toTime($var): int
@@ -620,10 +620,10 @@ class Variable
 	/**
 	 * Converts to megabytes
 	 *
-	 * @param float|int $var
+	 * @param numeric $var
 	 * @return float|int
 	 */
-	public static function toMB($var)
+	public static function toMB(float $var)
 	{
 		return $var / 1048576;
 	}
