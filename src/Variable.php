@@ -351,7 +351,7 @@ class Variable
 	 * @param int       $modBase
 	 * @return float|int
 	 */
-	public static function roundUpAny($value, int $modBase = 5)
+	public static function roundUpAny($value, float $modBase = 5)
 	{
 		return ceil($value / $modBase) * $modBase;
 	}
