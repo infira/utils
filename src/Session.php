@@ -21,23 +21,21 @@ class Session
 	public static $isStarted = false;
 	
 	private static $sessionName;
-	private static $timeout;
-	private static $sessionTime = 31536000;//365 * 24 * 60 * 60  - year
+	private static $timeout = 86400;
 	
 	/**
 	 * Config sessions
 	 *
-	 * @param string $sessionName - name of the PHP session
-	 * @param int    $timeout     timeout in seconds
+	 * @param string      $sessionName - name of the PHP session
+	 * @param string|null $SID         start or restore seission with own provided session ID,
 	 */
-	public static function init(string $sessionName = "PHPSESSID", $timeout = 86400)
+	public static function init(string $sessionName = 'PHPSESSID', string $SID = null)
 	{
 		if ($sessionName !== 'PHPSESSID')
 		{
 			$sessionName = "PHPSESSID_$sessionName";
 		}
 		self::$sessionName = $sessionName;
-		self::$timeout     = $timeout;
 		if (self::$isStarted == false)
 		{
 			self::$isStarted = true;
@@ -47,14 +45,14 @@ class Session
 				{
 					debug_print_backtrace();
 				}
-				self::start();
+				self::start($SID);
 			}
 		}
 		//debug('session_id()', session_id());
 		self::setSID(session_id());
 		
 		
-		$upTime  = self::get("_sessionUpdateTime", time());
+		$upTime  = self::get('_sessionUpdateTime', time());
 		$between = time() - $upTime;
 		if ($between > self::$timeout and $upTime > 0)
 		{
@@ -67,8 +65,8 @@ class Session
 		}
 		//debug(self::$sessionName);
 		//debug($_SESSION);
-		//debug("------------------------------------------------");
-		self::set("_sessionUpdateTime", time());
+		//debug('------------------------------------------------');
+		self::set('_sessionUpdateTime', time());
 	}
 	
 	/**
@@ -103,9 +101,9 @@ class Session
 		session_destroy();
 		if (self::$sessionName)
 		{
-			setcookie(self::$sessionName, "", 1);
+			setcookie(self::$sessionName, '', 1);
 			session_name(self::$sessionName);
-			session_set_cookie_params(self::$sessionTime);
+			session_set_cookie_params(self::$timeout);
 		}
 		self::start(); //start new session
 		//take new session ID
@@ -124,65 +122,48 @@ class Session
 	}
 	
 	/**
-	 * Sometimes PHP gives error session_id too long or containing illegal charactes
-	 * Here is the solition http://stackoverflow.com/questions/3185779/the-session-id-is-too-long-or-contains-illegal-characters-valid-characters-are
+	 * @see https://stackoverflow.com/questions/3185779/the-session-id-is-too-long-or-contains-illegal-characters-valid-characters-are
+	 * @return bool
 	 */
-	private static function start()
+	private static function doStart(): bool
 	{
-		$sn = self::$sessionName;
-		if (isset($_COOKIE[$sn]))
+		if (Cookie::exists(self::$sessionName))
 		{
-			$sessid = $_COOKIE[$sn];
-			if (preg_match('/.{32},.*/si', $sessid))
-			{
-				$str    = $sessid;
-				$sessid = substr($str, 0, 32);
-				$ex     = explode(",", trim(substr($str, 33)));
-				foreach ($ex as $part)
-				{
-					$part = trim($part);
-					if (strpos($part, "="))
-					{
-						$ex2 = explode("=", $part);
-						Cookie::set(trim($ex2[0]), $ex2[1]);
-					}
-				}
-			}
+			$sessid = Cookie::get(self::$sessionName);
 		}
-		if (isset($sessid))
+		else
 		{
-			session_id($sessid);
+			return session_start();
+		}
+		
+		if (!preg_match('/^[a-zA-Z0-9,\-]{22,40}$/', $sessid))
+		{
+			return false;
+		}
+		
+		return session_start();
+	}
+	
+	private static function start(string $SID = null)
+	{
+		if ($SID)
+		{
+			session_id($SID);
+			Cookie::set(self::$sessionName, $SID);
 		}
 		if (self::$sessionName)
 		{
 			session_name(self::$sessionName);
 		}
-		session_set_cookie_params(self::$sessionTime);
-		session_start();
-		self::setSessionCookie();
-		
-		/*
-		if (!preg_match('/^[a-zA-Z0-9,\-]{22,40}$/', $sessid))
+		session_set_cookie_params(self::$timeout);
+		if (!self::doStart($SID))
 		{
-			return false;
+			session_id(uniqid());
+			session_start();
+			session_regenerate_id();
 		}
-		session_start();
-		self::setSessionCookie();
-		*/
-		
-		return true;
 	}
 	
-	private static function setSessionCookie()
-	{
-		if (self::$sessionName)
-		{
-			if (isset($_COOKIE[self::$sessionName]))
-			{
-				setcookie(self::$sessionName, $_COOKIE[self::$sessionName], time() + self::$sessionTime, "/");
-			}
-		}
-	}
 	
 	/**
 	 * Get value from session, if this cache is true
@@ -256,6 +237,14 @@ class Session
 	public static function isExpired(): bool
 	{
 		return self::$isExpired;
+	}
+	
+	/**
+	 * @param int $timeout
+	 */
+	public static function setTimeout(int $timeout): void
+	{
+		self::$timeout = $timeout;
 	}
 	
 } // Session
