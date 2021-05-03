@@ -197,7 +197,7 @@ class Variable
 	
 	public static function removeEmptyArrayItems(array $arr): array
 	{
-		$arr = array_filter($arr, function ($item)
+		return array_filter($arr, function ($item)
 		{
 			return !empty($item);
 		});
