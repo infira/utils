@@ -183,13 +183,8 @@ function debug()
 		exit;
 	}
 	echo($html);
-	if ($isAjax)
-	{
-		exit();
-	}
 	
 	return true;
-	
 }
 
 function isDebugActive()
