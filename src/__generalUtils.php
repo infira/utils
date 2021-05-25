@@ -144,7 +144,6 @@ function pre($var): string
 	return "<pre>$var</pre>";
 }
 
-$GLOBALS["debugIsActive"] = false;
 /**
  * Debug function is to debug
  *
@@ -152,15 +151,8 @@ $GLOBALS["debugIsActive"] = false;
  */
 function debug()
 {
-	$GLOBALS["debugIsActive"] = true;
-	$args                     = func_get_args();
-	$html                     = "";
-	$isAjax                   = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
-	if ($isAjax)
-	{
-		$html = "[DEBUG_MSG].\n";
-	}
-	
+	$args = func_get_args();
+	$html = "";
 	if (count($args) == 1)
 	{
 		$html .= dump($args[0]);
@@ -175,6 +167,7 @@ function debug()
 	{
 		$html = str_replace(["<br />", "<br>"], "\n", $html);
 	}
+	\Infira\Utils\RuntimeMemory::set('lastDebugMessage', $html);
 	if (isset($_GET["traceDebug"]))
 	{
 		cleanOutput();
@@ -185,11 +178,6 @@ function debug()
 	echo($html);
 	
 	return true;
-}
-
-function isDebugActive()
-{
-	return $GLOBALS["debugIsActive"];
 }
 
 $GLOBALS["debugCollection"] = [];
