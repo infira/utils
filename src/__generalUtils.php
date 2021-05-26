@@ -168,6 +168,7 @@ function debug()
 		$html = str_replace(["<br />", "<br>"], "\n", $html);
 	}
 	\Infira\Utils\RuntimeMemory::set('lastDebugMessage', $html);
+	\Infira\Utils\RuntimeMemory::set('lastDebugMessageTrace', getTrace());
 	if (isset($_GET["traceDebug"]))
 	{
 		cleanOutput();
