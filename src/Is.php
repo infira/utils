@@ -10,7 +10,7 @@ class Is
 	 * @param $email
 	 * @return bool
 	 */
-	public static function email($email)
+	public static function email(string $email): bool
 	{
 		// First, we check that there's one @ symbol, and that the lengths are right
 		if (!preg_match("/^[^@]{1,64}@[^@]{1,255}$/", $email))
@@ -52,24 +52,12 @@ class Is
 	 * Is $val float or int
 	 *
 	 * @param mixed $val
+	 * @deprecated use is_numeric is tead
 	 * @return bool
 	 */
-	public static function number($val)
+	public static function number($val): bool
 	{
-		if (is_int($val) or is_numeric($val))
-		{
-			return true;
-		}
-		else
-		{
-			//^\d+?(\.|,)\d+?$
-			if (Regex::isMatch('/^\d+?(\.|,)\d+?$/m', (string)$val))
-			{
-				return true;
-			}
-		}
-		
-		return false;
+		return is_numeric($val);
 	}
 	
 	/**
@@ -78,7 +66,7 @@ class Is
 	 * @param mixed $val
 	 * @return bool
 	 */
-	public static function date($val)
+	public static function date(string $val): bool
 	{
 		if (empty($val))
 		{
@@ -109,7 +97,7 @@ class Is
 	 * @param mixed $val
 	 * @return bool
 	 */
-	public static function time($val)
+	public static function time(string $val): bool
 	{
 		$val = trim($val);
 		if (empty($val))
@@ -128,7 +116,7 @@ class Is
 	 * @param mixed  $val
 	 * @return bool
 	 */
-	public static function match(string $regex, $val)
+	public static function match(string $regex, $val): bool
 	{
 		return Regex::isMatch($regex, $val);
 	}
@@ -140,7 +128,7 @@ class Is
 	 * @param string $className
 	 * @return boolean
 	 */
-	public static function isClass($var, string $className)
+	public static function isClass($var, string $className): bool
 	{
 		if (!is_object($var))
 		{
@@ -154,15 +142,12 @@ class Is
 	/**
 	 * Check if the $nr is between $from AND $to
 	 *
-	 * @param number $nr
-	 *            - nr to check
-	 * @param number $from
-	 *            - between start
-	 * @param number $to
-	 *            - between end
+	 * @param number $nr   - nr to check
+	 * @param number $from - between start
+	 * @param number $to   - between end
 	 * @return boolean
 	 */
-	public static function between($nr, $from, $to)
+	public static function between($nr, $from, $to): bool
 	{
 		return ($nr >= $from and $nr <= $to);
 	}
@@ -170,10 +155,10 @@ class Is
 	/**
 	 * Check if is json
 	 *
-	 * @param $string
+	 * @param string $string
 	 * @return bool
 	 */
-	public static function json($string)
+	public static function json(string $string): bool
 	{
 		json_decode($string);
 		
