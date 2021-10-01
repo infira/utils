@@ -1,30 +1,22 @@
 <?php
 
 namespace Infira\Utils;
+
 /// Code profiler
+use Exception;
+
 class Profiler
 {
 	private $description;
-	
 	private $startTime;
-	
 	private $endTime;
-	
 	private $initTime;
-	
 	private $cur_timer;
-	
 	private $stack;
-	
 	private $trail;
-	
 	private $trace;
-	
 	private $count;
-	
 	private $running;
-	
-	private $names = [];
 	
 	/**
 	 * Sort array by fields
@@ -32,9 +24,8 @@ class Profiler
 	 * @param array $data
 	 * @param bool  $field
 	 * @param bool  $descending
-	 * @throws Error
 	 */
-	public function orderByField(array &$data = [], $field = false, $descending = false)
+	public function orderByField(array &$data, string $field, bool $descending)
 	{
 		$sortArr = [];
 		
@@ -43,7 +34,7 @@ class Profiler
 			if (!isset($value[$field]))
 			{
 				debug_print_backtrace();
-				throw new Error($field . ' is missing in the sortable array');
+				throw new Exception($field . ' is missing in the sortable array');
 			}
 			$va = $value[$field];
 			if ($field == "percent")
@@ -209,7 +200,6 @@ class Profiler
 	/**
 	 * Get html timers HTML
 	 *
-	 * @throws Error
 	 * @return string
 	 */
 	public function dumpTimers(): string
@@ -336,4 +326,19 @@ class Profiler
 	}
 }
 
-?>
+if (!function_exists('Prof'))
+{
+	/**
+	 * @param string $name
+	 * @return \Infira\Utils\Profiler()
+	 */
+	function Prof(string $name = "globalProfiler"): Profiler
+	{
+		if (!isset($GLOBALS["infira_profilers"][$name]))
+		{
+			$GLOBALS["infira_profilers"][$name] = new Profiler();
+		}
+		
+		return $GLOBALS["infira_profilers"][$name];
+	}
+}

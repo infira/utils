@@ -18,7 +18,7 @@ class ClosureHash
 	 * @throws \ReflectionException
 	 * @return string
 	 */
-	public static function from(\Closure $closure)
+	public static function from(\Closure $closure): string
 	{
 		if (!self::$hashes)
 		{
@@ -29,7 +29,7 @@ class ClosureHash
 		{
 			$ref = new \ReflectionFunction($closure);
 			
-			self::$hashes[$closure] = Gen::cacheID([$ref->__toString(), $ref->getStaticVariables()]);
+			self::$hashes[$closure] = md5(Gen::cacheString([$ref->__toString(), $ref->getStaticVariables()]));
 		}
 		
 		return self::$hashes[$closure];

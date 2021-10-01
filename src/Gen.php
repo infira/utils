@@ -2,7 +2,7 @@
 
 namespace Infira\Utils;
 
-use Infira\Utils\Is as Is;
+use Exception;
 
 class Gen
 {
@@ -19,9 +19,9 @@ class Gen
 		return str_repeat("0", ($length - strlen($documentID))) . "" . $documentID;
 	}
 	
-	public static function UUID($hashIT = false)
+	public static function UUID(): string
 	{
-		$uid = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',        // 32 bits for
+		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',        // 32 bits for
 			// "time_low"
 			mt_rand(0, 0xffff), mt_rand(0, 0xffff),
 			
@@ -39,12 +39,6 @@ class Gen
 			
 			// 48 bits for "node"
 			mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
-		if ($hashIT)
-		{
-			return md5($uid);
-		}
-		
-		return $uid;
 	}
 	
 	/**
@@ -52,17 +46,16 @@ class Gen
 	 *
 	 * @param int  $len
 	 * @param bool $norepeat - characates cannot be repeated
-	 * @throws Error
 	 * @return string
 	 */
-	public static function randomString(int $len, bool $norepeat = true)
+	public static function randomString(int $len, bool $norepeat = true): string
 	{
 		$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		$max   = strlen($chars) - 1;
 		
 		if ($norepeat && $len > $max + 1)
 		{
-			throw new Error("Non repetitive random string can't be longer than charset");
+			throw new Exception("Non repetitive random string can't be longer than charset");
 		}
 		
 		$rand_chars = [];
@@ -95,14 +88,14 @@ class Gen
 	 * @throws \ReflectionException
 	 * @return string
 	 */
-	public static function cacheID()
+	public static function cacheID(...$vars)
 	{
 		//return md5(self::cacheString(func_get_args()));
-		return hash("crc32b", self::cacheString(func_get_args()));
+		return hash("crc32b", self::cacheString(...$vars));
 	}
 	
 	/**
-	 * Generate cache string form aruments
+	 * Generate cache string form any variable
 	 *
 	 * @param mixed $key
 	 * @throws \ReflectionException
@@ -110,7 +103,7 @@ class Gen
 	 */
 	public static function cacheString($key): string
 	{
-		if (is_closure($key))
+		if (Is::closure($key))
 		{
 			return ClosureHash::from($key);
 		}
@@ -147,17 +140,6 @@ class Gen
 		return $key;
 	}
 	
-	public static function htmlParams(string $string = null): array
-	{
-		if (!$string)
-		{
-			return [];
-		}
-		
-		return parseStr($string);
-		
-	}
-	
 	/**
 	 * Generate reference number for banks
 	 *
@@ -180,5 +162,3 @@ class Gen
 		return "$number$check";
 	}
 }
-
-?>

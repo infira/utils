@@ -4,6 +4,8 @@
 use Infira\Utils\ClosureHash;
 
 require_once 'config.php';
+require_once '../src/Variable.php';
+require_once '../src/Is.php';
 require_once '../src/Gen.php';
 require_once '../src/ClosureHash.php';
 

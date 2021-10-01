@@ -1,6 +1,7 @@
 <?php
 
 namespace Infira\Utils;
+
 class Cookie
 {
 	/**
@@ -43,7 +44,7 @@ class Cookie
 	 * @param bool       $secure  Indicates that the cookie should only be transmitted over a secure HTTPS connection from the client. When set to TRUE, the cookie will only be set if a secure connection exists. On the server-side, it's on the programmer to send this kind of cookie only on secure connection (e.g. with respect to $_SERVER["HTTPS"]).
 	 * @see https://www.php.net/manual/en/function.setcookie.php
 	 */
-	public static function set(string $name, $value, $expires = 0, $secure = true)
+	public static function set(string $name, $value, $expires = 0, bool $secure = true)
 	{
 		$cookie_host = preg_replace('|^www\.(.*)$|', '.\\1', $_SERVER['HTTP_HOST']);
 		/*
@@ -98,7 +99,7 @@ class Cookie
 	}
 	
 	/**
-	 * Checks does item exists in $_COOKIE
+	 * Checks does item exist in $_COOKIE
 	 *
 	 * @param string $name
 	 * @return bool
@@ -116,5 +117,3 @@ class Cookie
 		$_COOKIE = [];
 	}
 }
-
-?>

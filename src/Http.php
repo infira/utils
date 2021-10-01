@@ -2,8 +2,6 @@
 
 namespace Infira\Utils;
 
-use Infira\Utils\Variable as Variable;
-
 /**
  * Class to handle $_GET, $_POST, _REQUEST, $_FILES , $_SERVER variables
  */
@@ -27,7 +25,7 @@ class Http
 	/**
 	 * Returns a $_POST OR $_GET variable value by $name
 	 *
-	 * @param string $name    - variable name, leave blank to to get all
+	 * @param string $name    - variable name, leave blank to get all
 	 * @param mixed  $default - default value on not found
 	 * @return mixed
 	 */
@@ -46,7 +44,7 @@ class Http
 	}
 	
 	/**
-	 * Does variable exists in  either $_POST OR $_GET
+	 * Does variable exist in  either $_POST OR $_GET
 	 *
 	 * @param string $name
 	 * @return bool
@@ -71,9 +69,9 @@ class Http
 	
 	/**
 	 * Returns a $_GET[$name] value
-	 * Leave all parametrs blank to get $_GET
+	 * Leave all parameters blank to get $_GET
 	 *
-	 * @param string $name    - variable name, leave blank to to get all
+	 * @param string $name    - variable name, leave blank to get all
 	 * @param mixed  $default - default value on not found
 	 * @return mixed
 	 */
@@ -116,7 +114,7 @@ class Http
 	
 	################################################################################ START of $_POST methods
 	/**
-	 * Does variable exists in in $_POST
+	 * Does variable exist in $_POST
 	 *
 	 * @param string $name
 	 * @return bool
@@ -128,9 +126,9 @@ class Http
 	
 	/**
 	 * Returns a $_POST[$name] value
-	 * Leave all parametrs blank to get $_POST
+	 * Leave all parameters blank to get $_POST
 	 *
-	 * @param string $name    - variable name, leave blank to to get all
+	 * @param string $name    - variable name, leave blank to get all
 	 * @param mixed  $default - default value on not found
 	 * @return mixed
 	 */
@@ -185,9 +183,9 @@ class Http
 	
 	/**
 	 * Returns a $_FILES[$name] value
-	 * Leave all parametrs blank to get $_FILES
+	 * Leave all parameters blank to get $_FILES
 	 *
-	 * @param string $name    - variable name, leave blank to to get all
+	 * @param string $name    - variable name, leave blank to get all
 	 * @param mixed  $default - default value on not found
 	 * @return mixed
 	 */
@@ -242,9 +240,9 @@ class Http
 	
 	/**
 	 * Returns a $_REQUEST[$name] value
-	 * Leave all parametrs blank to get $_REQUEST
+	 * Leave all parameters blank to get $_REQUEST
 	 *
-	 * @param string $name    - variable name, leave blank to to get all
+	 * @param string $name    - variable name, leave blank to get all
 	 * @param mixed  $default - default value on not found
 	 * @return mixed
 	 */
@@ -299,9 +297,9 @@ class Http
 	
 	/**
 	 * Returns a $_SERVER[$name] value
-	 * Leave all parametrs blank to get $_SERVER
+	 * Leave all parameters blank to get $_SERVER
 	 *
-	 * @param string $name    - variable name, leave blank to to get all
+	 * @param string $name    - variable name, leave blank to get all
 	 * @param mixed  $default - default value on not found
 	 * @return mixed
 	 */
@@ -331,7 +329,6 @@ class Http
 	{
 		return self::getRequestMethod() === 'post';
 	}
-	
 	
 	/**
 	 * Get request method $_SERVER["REQUEST_METHOD"]
@@ -386,24 +383,12 @@ class Http
 	public static function go(string $link = "", bool $redirect301 = false)
 	{
 		$link = str_replace('&amp;', '&', $link);
-		$llen = strlen($link) - 1;
-		if ($link[$llen] == "/")
+		if ($redirect301 == true)
 		{
-			$link = substr($link, 0, $llen);
+			Header("HTTP/1.1 301 Moved Permanently", true, 301);
 		}
-		if (!headers_sent())
-		{
-			if ($redirect301 == true)
-			{
-				Header("HTTP/1.1 301 Moved Permanently", true, 301);
-			}
-			header('Location: ' . $link);
-		}
-		else
-		{
-			echo "<script type=\"text/javascript\">document.location.href='" . $link . "'</script>";
-		}
-		exit();
+		header('Location: ' . $link);
+		exit;
 	}
 	
 	/**
@@ -467,6 +452,50 @@ class Http
 		return $_SERVER["HTTP_HOST"];
 	}
 	
+	/**
+	 * Get user IP
+	 * https://stackoverflow.com/questions/3003145/how-to-get-the-client-ip-address-in-php
+	 *
+	 * @return string
+	 */
+	public static function getIP(): string
+	{
+		if (isset($_SERVER['HTTP_CLIENT_IP']))
+		{
+			$ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+		}
+		elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+		{
+			$ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		}
+		elseif (isset($_SERVER['HTTP_X_FORWARDED']))
+		{
+			$ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+		}
+		elseif (isset($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']))
+		{
+			$ipaddress = $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
+		}
+		elseif (isset($_SERVER['HTTP_FORWARDED_FOR']))
+		{
+			$ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+		}
+		elseif (isset($_SERVER['HTTP_FORWARDED']))
+		{
+			$ipaddress = $_SERVER['HTTP_FORWARDED'];
+		}
+		elseif (isset($_SERVER['REMOTE_ADDR']))
+		{
+			$ipaddress = $_SERVER['REMOTE_ADDR'];
+		}
+		else
+		{
+			$ipaddress = 'UNKNOWN';
+		}
+		
+		return $ipaddress;
+	}
+	
 	//############################################################################################################# SOF Helpers
 	
 	/**
@@ -504,7 +533,7 @@ class Http
 	 * Gets a http value
 	 *
 	 * @param string $from    (get,post,request)
-	 * @param string $name    - leave blank to to get all
+	 * @param string $name    - leave blank to get all
 	 * @param mixed  $default - default value on not found
 	 * @return mixed
 	 */
@@ -606,5 +635,3 @@ class Http
 		}
 	}
 }
-
-?>

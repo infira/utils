@@ -1,8 +1,13 @@
 <?php
 
 namespace Infira\Utils;
+
+use Closure;
+use stdClass;
+use Exception;
+
 /**
- * A class store global re usable class objects
+ * A class store global to store class and constructed when fetched
  */
 final class ClassFarm
 {
@@ -51,10 +56,9 @@ final class ClassFarm
 	 *
 	 * @param string      $name
 	 * @param object|null $scope
-	 * @throws Error
 	 * @return null|object
 	 */
-	public static function get(string $name, object $scope = null)
+	public static function get(string $name, object $scope = null): ?object
 	{
 		if (self::exists($name))
 		{
@@ -72,7 +76,7 @@ final class ClassFarm
 				}
 				elseif (is_object($constructor))
 				{
-					if ($constructor instanceof \Closure && $scope)
+					if ($constructor instanceof Closure && $scope)
 					{
 						if (method_exists($constructor, "call"))
 						{
@@ -91,7 +95,7 @@ final class ClassFarm
 				}
 				else
 				{
-					throw new Error('Un implemented constructor type (' . gettype($constructor) . ')');
+					throw new Exception('Un implemented constructor type (' . gettype($constructor) . ')');
 				}
 				self::$farm[$name]->constructed = true;
 				self::$farm[$name]->classObject = $c;
@@ -108,10 +112,9 @@ final class ClassFarm
 	 *
 	 * @param string          $name
 	 * @param callable|string $constructor
-	 * @throws Error
 	 * @return object|null
 	 */
-	public static function instance(string $name, $constructor)
+	public static function instance(string $name, $constructor): ?object
 	{
 		self::add($name, $constructor);
 		
@@ -127,7 +130,7 @@ final class ClassFarm
 		if (!self::exists($name))
 		{
 			$path                  = preg_split('/->|>/', $name);
-			$instance              = new \stdClass();
+			$instance              = new stdClass();
 			$instance->constructed = false;
 			$instance->constructor = $constructor;
 			$instance->namespace   = end($path);
@@ -137,7 +140,7 @@ final class ClassFarm
 	
 	/**
 	 * Protected constructor to prevent creating a new instance of the
-	 * *Singleton* via the `new` operator from outside of this class.
+	 * *Singleton* via the `new` operator from outside this class.
 	 */
 	public function __construct() { }
 	
@@ -150,12 +153,10 @@ final class ClassFarm
 	public function __clone() { }
 	
 	/**
-	 * Private unserialize method to prevent unserializing of the *Singleton*
+	 * Private serialize method to prevent serializing of the *Singleton*
 	 * instance.
 	 *
 	 * @return void
 	 */
 	public function __wakeup() { }
 }
-
-?>

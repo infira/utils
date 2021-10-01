@@ -36,5 +36,3 @@ class TestFacade extends \Infira\Utils\Facade
 
 TestFacade::sayHello();
 
-?>
-

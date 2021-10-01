@@ -2,76 +2,96 @@
 
 namespace Infira\Utils;
 
-use Infira\Utils\Variable as Variable;
-use Infira\Utils\File as File;
-
 class Dir
 {
-	
 	/**
-	 * Delete a folder/directory
+	 * Flush folder content
 	 *
 	 * @param string $path
-	 * @return bool
+	 * @param bool   $removePath
+	 * @param array  $exclude array including regular expression patterns
 	 */
-	public static function delete(string $path): bool
+	private static function doFlush(string $path, bool $removePath, array $exclude = [])
 	{
 		if (is_dir($path))
 		{
-			$openDir = scandir($path);
-			if (is_array($openDir) && count($openDir) > 0)
+			foreach (glob($path . '/*') as $file)
 			{
-				self::flush($path);
+				$excluded = false;
+				foreach ($exclude as $pattern)
+				{
+					if (Regex::is($pattern))
+					{
+						if (preg_match($pattern, $file))
+						{
+							$excluded = true;
+							break;
+						}
+					}
+					else
+					{
+						if (strpos($file, $pattern) !== false)
+						{
+							$excluded = true;
+							break;
+						}
+					}
+				}
+				if (!$excluded)
+				{
+					if (is_dir($file))
+					{
+						self::doFlush($file, true, $exclude);
+					}
+					else
+					{
+						unlink($file);
+					}
+				}
 			}
-			rmdir($path);
+			if ($removePath)
+			{
+				rmdir($path);
+			}
 		}
-		
-		return true;
+	}
+	
+	/**
+	 * Delete a folder
+	 *
+	 * @param string $path
+	 */
+	public static function delete(string $path)
+	{
+		self::doFlush($path, true);
 	}
 	
 	/**
 	 * Flush folder content
 	 *
 	 * @param string $path
-	 * @param array  $exlude
-	 * @return bool
 	 */
-	public static function flush(string $path, array $exlude = []): bool
+	public static function flush(string $path)
 	{
-		if (is_dir($path))
-		{
-			$openDir = self::getContents($path, $exlude);
-			if (is_array($openDir) && count($openDir) > 0)
-			{
-				foreach ($openDir as $file)
-				{
-					if (!in_array($file, [".", ".."]))
-					{
-						if (substr($path, -1) != '/')
-						{
-							$path .= '/';
-						}
-						if (is_dir($path . $file))
-						{
-							self::delete($path . $file);
-						}
-						else
-						{
-							File::delete($path . $file);
-						}
-					}
-				}
-			}
-		}
-		
-		return true;
+		self::doFlush($path, false);
+	}
+	
+	/**
+	 * Flush folder content excluding some
+	 *
+	 * @param string $path
+	 * @param array  $exclude array including regular expression patterns
+	 */
+	public static function flushExcept(string $path, array $exclude = [])
+	{
+		self::doFlush($path, false, $exclude);
 	}
 	
 	/**
 	 * If folder doest no exists make it
 	 *
 	 * @param string $path
-	 * @param int    $chmod - chod it
+	 * @param int    $chmod - chmod it
 	 * @return string created dir path
 	 */
 	public static function make(string $path, int $chmod = 0777): string
@@ -84,96 +104,170 @@ class Dir
 		return $path;
 	}
 	
-	/** get path content
-	 *
-	 * @param string $path
-	 * @param array  $exlude
-	 * @param bool   $recursive
-	 * @param bool   $absolutePath - get absolute paths
-	 * @return array
+	/**
+	 * @throws \Exception
 	 */
-	public static function getContents(string $path, $exlude = [], bool $recursive = false, bool $absolutePath = false): array
+	private static function scan(string $path, bool $recursive, bool $includeFolders, bool $getAbsolutePaths, array $exclude = [], array $filterExtensions = []): array
 	{
-		$exlude   = Variable::toArray($exlude);
-		$exlude[] = ".";
-		$exlude[] = "..";
-		if (is_dir($path))
+		$output = [];
+		$path   = realpath($path);
+		if (!is_dir($path))
 		{
-			if ($recursive)
+			throw new \Exception("$path folder does not exists");
+		}
+		$pattern = $filterExtensions ? '*.{' . join(',', $filterExtensions) . '}' : '*';
+		foreach (glob($path . '/' . $pattern, GLOB_BRACE) as $file)
+		{
+			$file     = realpath($file);
+			$excluded = false;
+			foreach ($exclude as $pattern)
 			{
-				$getRecursive = function ($path, $mainPrefix = "") use (&$exlude, &$getRecursive)
+				if (Regex::is($pattern))
 				{
-					$r  = scandir($path);
-					$nr = [];
-					foreach ($r as $p)
+					if (preg_match($pattern, $file))
 					{
-						
-						if ($mainPrefix)
-						{
-							$prefix = $mainPrefix . DIRECTORY_SEPARATOR . $p;
-						}
-						else
-						{
-							$prefix = $p;
-						}
-						if (!in_array($p, [".", ".."]))
-						{
-							$nr[] = $prefix;
-							$pp   = $path . DIRECTORY_SEPARATOR . $p;
-							if (is_dir($pp))
-							{
-								$nr = array_merge($nr, $getRecursive($pp, $prefix));
-							}
-						}
+						$excluded = true;
+						break;
 					}
-					
-					return $nr;
-				};
-				$r            = $getRecursive($path);
-			}
-			else
-			{
-				$r = scandir($path);
-			}
-			if (checkArray($exlude))
-			{
-				foreach ($exlude as $ex)
+				}
+				else
 				{
-					if ($ex[0] == "/")
+					if (strpos($file, $pattern) !== false)
 					{
-						$gr = preg_grep($ex, $r);
-						if (checkArray($gr))
-						{
-							foreach ($gr as $gk => $gv)
-							{
-								unset($r[$gk]);
-							}
-						}
-					}
-					else
-					{
-						$key = array_search($ex, $r);
-						if ($key >= 0)
-						{
-							unset($r[$key]);
-						}
+						$excluded = true;
+						break;
 					}
 				}
 			}
 			
-			$r = array_values($r);
-			if ($absolutePath)
+			if (!$excluded)
 			{
-				array_walk($r, function (&$item, $key) use (&$path)
+				$oFile = $getAbsolutePaths ? $file : basename($file);
+				if (is_dir($file))
 				{
-					$item = realpath($path) . DIRECTORY_SEPARATOR . $item;
-				});
+					if ($includeFolders)
+					{
+						$output[] = $oFile . '/';
+					}
+					if ($recursive)
+					{
+						$output = array_merge($output, self::scan($file, $recursive, $includeFolders, $getAbsolutePaths, $exclude));
+					}
+				}
+				else
+				{
+					$output[] = $oFile;
+				}
 			}
-			
-			return $r;
 		}
 		
-		return [];
+		return $output;
+	}
+	
+	/**
+	 * Get files with absolute paths from folder
+	 *
+	 * @param string $path
+	 * @param array  $filterExtensions get files only with these extensions
+	 * @param array  $exclude
+	 * @throws \Exception
+	 * @return array
+	 */
+	public static function getFiles(string $path, array $filterExtensions = [], array $exclude = []): array
+	{
+		return self::scan($path, false, false, true, $exclude, $filterExtensions);
+	}
+	
+	/**
+	 * Get file names from folder
+	 *
+	 * @param string $path
+	 * @param array  $filterExtensions get files only with these extensions
+	 * @param array  $exclude
+	 * @throws \Exception
+	 * @return array
+	 */
+	public static function getFileNames(string $path, array $filterExtensions = [], array $exclude = []): array
+	{
+		return self::scan($path, false, false, false, $exclude, $filterExtensions);
+	}
+	
+	/**
+	 * Get files and sub folders inside path
+	 *
+	 * @param string $path
+	 * @param array  $filterExtensions
+	 * @param array  $exclude
+	 * @throws \Exception
+	 * @return array - array with absolute paths
+	 */
+	public static function getContent(string $path, array $filterExtensions = [], array $exclude = []): array
+	{
+		return self::scan($path, false, true, true, $exclude, $filterExtensions);
+	}
+	
+	/**
+	 * Get recursive files with absolute paths from folder
+	 *
+	 * @param string $path
+	 * @param array  $filterExtensions get files only with these extensions
+	 * @param array  $exclude
+	 * @throws \Exception
+	 * @return array
+	 */
+	public static function getFilesRecursive(string $path, array $filterExtensions = [], array $exclude = []): array
+	{
+		return self::scan($path, true, false, true, $exclude, $filterExtensions);
+	}
+	
+	/**
+	 * Get recursive file names from folder
+	 *
+	 * @param string $path
+	 * @param array  $filterExtensions get files only with these extensions
+	 * @param array  $exclude
+	 * @throws \Exception
+	 * @return array
+	 */
+	public static function getFileNamesRecursive(string $path, array $filterExtensions = [], array $exclude = []): array
+	{
+		return self::scan($path, true, false, false, $exclude, $filterExtensions);
+	}
+	
+	/**
+	 * Get recursive files and sub folders inside path
+	 *
+	 * @param string $path
+	 * @param array  $filterExtensions
+	 * @param array  $exclude
+	 * @throws \Exception
+	 * @return array - array with absolute paths
+	 */
+	public static function getContentRecursive(string $path, array $filterExtensions = [], array $exclude = []): array
+	{
+		return self::scan($path, true, true, true, $exclude, $filterExtensions);
+	}
+	
+	/**
+	 * Add DIRECTORY_SEPARATOR to end of folder path
+	 *
+	 * @param string $path
+	 * @return array|string|string[]
+	 */
+	public static function fixPath(string $path)
+	{
+		if (empty($path) or is_file($path))
+		{
+			return $path;
+		}
+		$path = str_replace("/", DIRECTORY_SEPARATOR, $path);
+		$len  = strlen($path) - 1;
+		if ($path[$len] != DIRECTORY_SEPARATOR and !is_file($path))
+		{
+			$path .= DIRECTORY_SEPARATOR;
+		}
+		
+		return $path;
 	}
 }
 

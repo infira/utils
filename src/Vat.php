@@ -4,30 +4,25 @@ namespace Infira\Utils;
 
 class Vat
 {
+	private static $percent = 20;
+	
+	public static function setPercent(float $percent)
+	{
+		self::$percent = $percent;
+	}
+	
 	/**
 	 * Get vat percent calculation nr
 	 *
-	 * @param null $vatPercent
-	 * @return float|int
+	 * @param float|null $vatPercent
+	 * @return float
 	 */
-	private static function getPercent(float $vatPercent = null)
+	private static function getCalcPercent(float $vatPercent = null)
 	{
-		$vatP = $vatPercent;
-		if ($vatP === null)
-		{
-			if (defined('GLOBAL_VAT_PERCENT'))
-			{
-				$vatP = GLOBAL_VAT_PERCENT;
-			}
-			else
-			{
-				$vatP = 20;
-			}
-		}
+		$vatP = $vatPercent == null ? self::$percent : $vatPercent;
 		
 		return ($vatP / 100) + 1;
 	}
-	
 	
 	/**
 	 * Get vat amount
@@ -42,11 +37,11 @@ class Vat
 		$amount = floatval($amount);
 		if ($amountContainsVat == true)
 		{
-			$output = $amount - ($amount / self::getPercent($vatPercent));
+			$output = $amount - ($amount / self::getCalcPercent($vatPercent));
 		}
 		else
 		{
-			$output = ($amount * self::getPercent($vatPercent)) - $amount;
+			$output = ($amount * self::getCalcPercent($vatPercent)) - $amount;
 		}
 		
 		return $output;
@@ -77,5 +72,3 @@ class Vat
 		return $gross - self::get($gross, true, $vatPercent);
 	}
 }
-
-?>

@@ -47,13 +47,12 @@ class Is
 		return true;
 	}
 	
-	
 	/**
 	 * Is $val float or int
 	 *
 	 * @param mixed $val
-	 * @deprecated use is_numeric is tead
 	 * @return bool
+	 * @deprecated use is_numeric is tead
 	 */
 	public static function number($val): bool
 	{
@@ -90,25 +89,6 @@ class Is
 		return false;
 	}
 	
-	
-	/**
-	 * Function to check is the given value a date
-	 *
-	 * @param mixed $val
-	 * @return bool
-	 */
-	public static function time(string $val): bool
-	{
-		$val = trim($val);
-		if (empty($val))
-		{
-			return false;
-		}
-		
-		return preg_match('/\\d\\d:\\d\\d/', $val);
-	}
-	
-	
 	/**
 	 * Function to check is given value match to given preg_ regeq
 	 *
@@ -120,7 +100,6 @@ class Is
 	{
 		return Regex::isMatch($regex, $val);
 	}
-	
 	
 	/**
 	 * Check if the @param mixed $var
@@ -137,7 +116,6 @@ class Is
 		
 		return $var instanceof $className;
 	}
-	
 	
 	/**
 	 * Check if the $nr is between $from AND $to
@@ -164,6 +142,15 @@ class Is
 		
 		return (json_last_error() == JSON_ERROR_NONE);
 	}
+	
+	/**
+	 * Check if is closure
+	 *
+	 * @param mixed $string
+	 * @return bool
+	 */
+	public static function closure($var): bool
+	{
+		return is_object($var) && ($var instanceof \Closure);
+	}
 }
-
-?>

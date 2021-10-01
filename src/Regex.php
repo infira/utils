@@ -4,80 +4,49 @@ namespace Infira\Utils;
 
 class Regex
 {
-	/**
-	 * @param string $regex         - regular expression pattern
-	 * @param string $subject       - where to find matches
-	 * @param bool   $returnOnFalse - return that if not found
-	 * @return mixed
-	 */
-	public static function getMatches(string $regex, string $subject, $returnOnFalse = false)
+	public static function getMatches(string $pattern, string $subject): ?string
 	{
-		if (preg_match($regex, $subject))
+		$is = preg_match_all($pattern, $subject, $matches, PREG_SET_ORDER);
+		if ($is)
 		{
-			$matches = [];
-			preg_match_all($regex, $subject, $matches);
-			
 			return $matches[0];
 		}
-		else
-		{
-			return $returnOnFalse;
-		}
+		
+		return null;
 	}
 	
-	/**
-	 * Get a single match
-	 *
-	 * @param string $regex   - regular expression pattern
-	 * @param string $subject - where to find matches
-	 * @param int    $nr
-	 * @param bool   $returnOnFalse
-	 * @return mixed
-	 */
-	public static function getMatch(string $regex, string $subject, int $nr = 0, $returnOnFalse = false)
+	public static function getMatch(string $pattern, string $subject): ?string
 	{
-		$matches = self::getMatches($regex, $subject);
-		if (is_array($matches) and count($matches) > 0)
+		$is = preg_match($pattern, $subject, $matches);
+		if ($is)
 		{
-			if (isset($matches[$nr]))
-			{
-				return trim($matches[$nr]);
-			}
+			return $matches[0];
 		}
 		
-		return $returnOnFalse;
+		return null;
 	}
 	
 	/**
-	 * Function to check is given value match to given preg_ regeq
+	 * has matches
 	 *
-	 * @param string $regex   - regular expression pattern
-	 * @param string $subject - where to find matches
+	 * @param string $pattern
+	 * @param string $subject
 	 * @return bool
 	 */
-	public static function isMatch($regex, $subject)
+	public static function isMatch(string $pattern, string $subject): bool
 	{
-		$matches = self::getMatches($regex, $subject);
-		if (is_array($matches) and count($matches) > 0)
-		{
-			if (isset($matches[0]))
-			{
-				return true;
-			}
-		}
-		
-		return false;
+		return (bool)preg_match($pattern, $subject);
 	}
 	
 	/**
 	 * Is a regular expression
 	 *
-	 * @param $str
+	 * @param string $str
 	 * @return bool
 	 */
 	public static function is(string $str): bool
 	{
-		return (preg_match('/^\/.+\/[a-z]*$/i', $str)) ? true : false;
+		return (bool)preg_match('/^\/.+?\/[a-z]*$/i', $str);
 	}
 	
 	/**
@@ -96,5 +65,3 @@ class Regex
 		return $pattern;
 	}
 }
-
-?>

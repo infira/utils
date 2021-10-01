@@ -14,7 +14,7 @@ class Session
 	private static $isExpired = false;
 	
 	/**
-	 * Is php session started withd session_start()
+	 * Is php session started with session_start()
 	 *
 	 * @var bool
 	 */
@@ -27,7 +27,7 @@ class Session
 	 * Config sessions
 	 *
 	 * @param string      $sessionName - name of the PHP session
-	 * @param string|null $SID         start or restore seission with own provided session ID,
+	 * @param string|null $SID         start or restore session with own provided session ID,
 	 */
 	public static function init(string $sessionName = 'PHPSESSID', string $SID = null)
 	{
@@ -70,7 +70,7 @@ class Session
 	}
 	
 	/**
-	 * Retrives a 32bit session id hash
+	 * Retrieves a 32bit session id hash
 	 *
 	 * @return string
 	 */
@@ -164,7 +164,6 @@ class Session
 		}
 	}
 	
-	
 	/**
 	 * Get value from session, if this cache is true
 	 *
@@ -246,6 +245,4 @@ class Session
 	{
 		self::$timeout = $timeout;
 	}
-	
-} // Session
-?>
+}

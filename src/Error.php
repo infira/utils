@@ -6,14 +6,13 @@ use ErrorException;
 
 class Error extends ErrorException
 {
- 	public function __construct($message, $data = null)
+	public function __construct($message, $data = null)
 	{
 		if ($data)
 		{
 			$message .= '<br>';
-			$message .= 'Trace:<pre style="padding:0;margin: 0">' . dump($data) . '</pre>';
+			$message .= 'Trace:<pre style="padding:0;margin: 0">' . Variable::dump($data) . '</pre>';
 		}
-		//$message .= '<br> Trace:' . pre(getTrace(1));
 		parent::__construct($message);
 	}
 }

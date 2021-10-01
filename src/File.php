@@ -3,20 +3,19 @@
 namespace Infira\Utils;
 
 use Infira\Utils\Variable as Variable;
-use Infira\Utils\Fix as Fix;
+use Exception;
 
 class File
 {
-	
 	/**
-	 * Delete file
+	 * Delete file or files
 	 *
 	 * @param string|array $files
 	 * @return bool - success
 	 */
 	public static function delete($files): bool
 	{
-		if (checkArray($files))
+		if (is_array($files))
 		{
 			foreach ($files as $file)
 			{
@@ -86,7 +85,7 @@ class File
 	 * @param bool   $toLower - return extension name as lowercase string
 	 * @return string
 	 */
-	public static function getExtension(string $file, bool $toLower = true)
+	public static function getExtension(string $file, bool $toLower = true): string
 	{
 		$info = pathinfo($file);
 		if (array_key_exists("extension", $info))
@@ -100,40 +99,14 @@ class File
 	}
 	
 	/**
-	 * remove extension form file name
-	 *
-	 * @param string $file
-	 * @return string
-	 */
-	public static function removeExtension(string $file)
-	{
-		return str_replace("." . self::getExtension($file, false), "", $file);
-	}
-	
-	/**
 	 * get file filename without extension
 	 *
 	 * @param string $file - file to be replaced
 	 * @return string
 	 */
-	public static function getFileNameWithoutExtension(string $file)
+	public static function getFileNameWithoutExtension(string $file): string
 	{
 		return pathinfo($file)["filename"];
-	}
-	
-	/**
-	 * Replace filename with new one
-	 *
-	 * @param string $file    - file to be replaced
-	 * @param string $newName without extension
-	 * @return string
-	 */
-	public static function replaceName(string $file, string $newName)
-	{
-		$info    = pathinfo($file);
-		$dirName = trim(Fix::dirPath($info["dirname"]));
-		
-		return $dirName . self::removeExtension($newName) . "." . $info["extension"];
 	}
 	
 	/**
@@ -142,7 +115,7 @@ class File
 	 * @param string $file
 	 * @return string
 	 */
-	public static function getPath(string $file)
+	public static function getPath(string $file): string
 	{
 		$info = pathinfo($file);
 		
@@ -153,11 +126,10 @@ class File
 	 * @param string   $file
 	 * @param          $content
 	 * @param string   $writeMode
-	 * @param int|null $chmod - defautls to null, chmod will not be applied
-	 * @param mixed    $owner - defautls to null, owner will not be applied
-	 * @return bool
+	 * @param int|null $chmod - defaults to null, chmod will not be applied
+	 * @param mixed    $owner - defaults to null, owner will not be applied
 	 */
-	public static function create(string $file, $content, $writeMode = "w+", int $chmod = null, $owner = null)
+	public static function create(string $file, $content, string $writeMode = "w+", int $chmod = null, $owner = null)
 	{
 		$fp = fopen($file, $writeMode);
 		fwrite($fp, $content);
@@ -170,8 +142,6 @@ class File
 		{
 			chmod($file, str_pad($chmod, 4, "0", STR_PAD_LEFT));
 		}
-		
-		return true;
 	}
 	
 	/**
@@ -191,7 +161,7 @@ class File
 	 * @param mixed  $line
 	 * @param bool   $addLineBreak - add break to end of the line
 	 */
-	public static function addLine(string $file, $line, $addLineBreak = true)
+	public static function addLine(string $file, $line, bool $addLineBreak = true)
 	{
 		$fp = fopen($file, "a");
 		if ($addLineBreak)
@@ -203,12 +173,11 @@ class File
 	}
 	
 	/**
-	 * @param       $file
-	 * @param array $steamContextOptions
-	 * @throws Error
-	 * @return bool|false|string
+	 * @param string $file
+	 * @param array  $steamContextOptions
+	 * @return null|string
 	 */
-	public static function getContent(string $file, $steamContextOptions = [])
+	public static function getContent(string $file, array $steamContextOptions = []): ?string
 	{
 		if (filter_var($file, FILTER_VALIDATE_URL))
 		{
@@ -218,7 +187,7 @@ class File
 				$steamContextOptions = array_merge(["ssl" => ["verify_peer" => false, "verify_peer_name" => false]], $steamContextOptions);
 			}
 			
-			if (checkArray($steamContextOptions))
+			if (is_array($steamContextOptions))
 			{
 				$content = file_get_contents($file, false, stream_context_create($steamContextOptions));
 			}
@@ -235,7 +204,7 @@ class File
 			}
 			else
 			{
-				throw new Error("file not found");
+				throw new Exception("file not found");
 			}
 		}
 		
@@ -248,7 +217,6 @@ class File
 	 * @param string      $file - file path
 	 * @param string|NULL $downloadAsFileName
 	 * @param bool        $deleteAfterDownload
-	 * @throws Error
 	 */
 	public static function forceDownload(string $file, string $downloadAsFileName = null, bool $deleteAfterDownload = false)
 	{
@@ -266,7 +234,6 @@ class File
 			header('Pragma: public');
 			header('Content-Length: ' . filesize($file));
 			//clean all levels of output buffering
-			cleanOutput();
 			readfile($file);
 			if ($deleteAfterDownload == true)
 			{
@@ -277,7 +244,7 @@ class File
 		}
 		else
 		{
-			throw new Error("File not found");
+			throw new Exception("File not found");
 		}
 	}
 	
@@ -288,7 +255,7 @@ class File
 	 * @param string $default - if mime type is not found then application/octet-stream is returned
 	 * @return string
 	 */
-	public static function getMimeType(string $file, $default = "application/octet-stream"): string
+	public static function getMimeType(string $file, string $default = "application/octet-stream"): string
 	{
 		$ext            = self::getExtension($file);
 		$types          = [];
@@ -322,43 +289,12 @@ class File
 		$types['wav']   = 'audio/wav';
 		$types['xbm']   = 'image/xbm';
 		$types['xml']   = 'text/xml';
-		if (isset($types[$ext]))
-		{
-			return $types[$ext];
-		}
-		else
-		{
-			return $default;
-		}
+		
+		return $types[$ext] ?? $default;
 	}
 	
 	/**
-	 * Show file content as header
-	 *
-	 * @param string $file
-	 * @param bool   $deleteAfterDownload
-	 */
-	public static function show(string $file, bool $deleteAfterDownload = false)
-	{
-		if (file_exists($file))
-		{
-			header('Content-Type: ' . self::getMimeType($file));
-			header('Content-Transfer-Encoding: binary');
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header('Pragma: public');
-			readfile($file);
-			if ($deleteAfterDownload === true)
-			{
-				self::delete($file);
-			}
-			// ob_end_clean();
-			exit();
-		}
-	}
-	
-	/**
-	 * Human readable file size
+	 * Human-readable file size
 	 *
 	 * @param string $file
 	 * @return string file size
@@ -384,13 +320,15 @@ class File
 	 *
 	 * @param string $fileUrl - full url
 	 * @param string $saveTo  - path
-	 * @throws Error
 	 * @return bool
 	 */
 	public static function download(string $fileUrl, string $saveTo)
 	{
+		if (!is_dir($saveTo))
+		{
+			throw  new Exception("path $saveTo not found");
+		}
+		
 		return file_put_contents($saveTo, self::getContent($fileUrl));
 	}
 }
-
-?>

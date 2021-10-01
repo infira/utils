@@ -4,7 +4,6 @@ namespace Infira\Utils;
 
 
 use Closure;
-use ReflectionException;
 
 /**
  * TempController
@@ -18,8 +17,8 @@ use ReflectionException;
  * @method static array getItems() get all values
  * @method static array getTree() get all items and sub collections
  * @method static void each(callable $callback) Call $callback for every item in current collection<br /> $callback($itemValue, $itemName)
- * @method static void eachTree(callable $callback) Call $callback for every collection, sub collection and every item<br />$callback($itemValue, $itemName, $collecitonName)
- * @method static void eachCollection(callable $callback) Call $callback for every collection<br />$callback($Colleciton, $collectionName)
+ * @method static void eachTree(callable $callback) Call $callback for every collection, sub collection and every item<br />$callback($itemValue, $itemName, $collectionName)
+ * @method static void eachCollection(callable $callback) Call $callback for every collection<br />$callback($Collection, $collectionName)
  * @method static array getCollections() get all sub collections
  * @method static mixed magic(Closure $callback) Execute closure once per $key existence
  * @method static mixed once(string|array $key, callable $callback) Execute $callback once per $key existence
@@ -111,7 +110,7 @@ final class RuntimeMemoryCollection
 	}
 	
 	/**
-	 * Add new new item
+	 * Add new item
 	 *
 	 * @param mixed $value
 	 * @return void
@@ -228,7 +227,7 @@ final class RuntimeMemoryCollection
 	}
 	
 	/**
-	 * Call $callback for every collection, sub collection and every item<br />$callback($itemValue,$itemName,$collecitonName)
+	 * Call $callback for every collection, sub collection and every item<br />$callback($itemValue,$itemName,$collectionName)
 	 *
 	 * @param callable $callback
 	 * @return void
@@ -246,7 +245,7 @@ final class RuntimeMemoryCollection
 	}
 	
 	/**
-	 * Call $callback for every collection<br />$callback($Colleciton,$collectionName)
+	 * Call $callback for every collection<br />$callback($Collection,$collectionName)
 	 *
 	 * @param callable $callback
 	 * @return void
@@ -273,13 +272,12 @@ final class RuntimeMemoryCollection
 	 * Execute closure once per $key existence
 	 * All arguments after  $callback will be passed to callable method
 	 *
-	 * @param Closure $callback method result will be setted to memory for later use
-	 * @throws ReflectionException
+	 * @param Closure $callback method result will be set to memory for later use
 	 * @return mixed - $callback result
 	 */
 	public function magic(Closure $callback)
 	{
-		return $this->onceCID(ClosureHash::from($callback), false, $callback);
+		return $this->onceCID(self::generateCID($callback), false, $callback);
 	}
 	
 	/**
@@ -287,13 +285,12 @@ final class RuntimeMemoryCollection
 	 * All arguments after  $callback will be passed to callable method
 	 *
 	 * @param string|array|int $key
-	 * @param callable         $callback method result will be setted to memory for later use
-	 * @throws ReflectionException
+	 * @param callable         $callback method result will be set to memory for later use
 	 * @return mixed - $callback result
 	 */
 	public function once($key, callable $callback)
 	{
-		return $this->onceCID(Gen::cacheID($key), false, $callback);
+		return $this->onceCID(self::generateCID($key), false, $callback);
 	}
 	
 	/**
@@ -302,13 +299,12 @@ final class RuntimeMemoryCollection
 	 *
 	 * @param string|array|int $key
 	 * @param callable         $callback
-	 * @param bool             $forceExec - if its true then $callback will be called regardless of is the item is setted or not
-	 * @throws ReflectionException
+	 * @param bool             $forceExec - if its true then $callback will be called regardless of is the item is set or not
 	 * @return mixed|null - $callback result
 	 */
 	public function onceForce($key, callable $callback, bool $forceExec = false)
 	{
-		return $this->onceCID(Gen::cacheID($key), $forceExec, $callback);
+		return $this->onceCID($this->generateCID($key), $forceExec, $callback);
 	}
 	
 	private function onceCID(string $CID, bool $forceExec, callable $callback)
@@ -333,6 +329,9 @@ final class RuntimeMemoryCollection
 		
 		return true;
 	}
+	
+	private function generateCID($key)
+	{
+		return hash("crc32b", Gen::cacheString($key));
+	}
 }
-
-?>

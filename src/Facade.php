@@ -20,10 +20,9 @@ abstract class Facade
 	/**
 	 * @param string          $name
 	 * @param string|callable $constructor - a class name or callable method what returns objects
-	 * @throws Error
 	 * @return object|null
 	 */
-	protected static function getInstance(string $name, $constructor)
+	protected static function getInstance(string $name, $constructor): ?object
 	{
 		return ClassFarm::instance($name, $constructor);
 	}
