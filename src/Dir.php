@@ -107,10 +107,14 @@ class Dir
 	/**
 	 * @throws \Exception
 	 */
-	private static function scan(string $path, bool $recursive, bool $includeFolders, bool $getAbsolutePaths, array $exclude = [], array $filterExtensions = []): array
+	private static function scan(string $_path, bool $recursive, bool $includeFolders, bool $getAbsolutePaths, array $exclude = [], array $filterExtensions = []): array
 	{
 		$output = [];
-		$path   = realpath($path);
+		$path   = realpath($_path);
+		if (is_bool($path))
+		{
+			throw new \Exception("$path folder does not exists");
+		}
 		if (!is_dir($path))
 		{
 			throw new \Exception("$path folder does not exists");
