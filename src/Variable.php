@@ -309,19 +309,25 @@ class Variable
 	 * @param mixed $variable
 	 * @return string
 	 */
-	public static function dump($variable): string
+	public static function dump(...$variables): string
 	{
-		if (is_array($variable) or is_object($variable))
+		$output = '';
+		foreach ($variables as $variable)
 		{
-			return print_r($variable, true);
+			if (is_array($variable) or is_object($variable))
+			{
+				$output .= print_r($variable, true) . "\n";
+			}
+			else
+			{
+				ob_start();
+				var_dump($variable);
+				
+				$output .= ob_get_clean() . "\n";
+			}
 		}
-		else
-		{
-			ob_start();
-			var_dump($variable);
-			
-			return ob_get_clean();
-		}
+		
+		return $output;
 	}
 	//endregion
 }
