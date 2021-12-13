@@ -32,12 +32,15 @@ class Date
 	}
 	
 	/**
-	 * Get infira DateTime object
+	 * Get date time from $time with $now as basetime,
+	 * uses strtime
+	 * Used of() instead
 	 *
 	 * @param string|int $time
 	 * @param null       $now - use base time or string, defaults to now ($now is converted to time)
 	 * @throws \Exception
-	 * @return \Infira\Utils\DateTime
+	 * @return DateTime
+	 * @deprecated
 	 */
 	public static function from(string $time, $now = null): DateTime
 	{
@@ -45,6 +48,19 @@ class Date
 		$dt->setTimestamp(self::toTime($time, $now));
 		
 		return $dt;
+	}
+	
+	/**
+	 * Constructs DateTime objet
+	 *
+	 * @param string             $datetime
+	 * @param \DateTimeZone|null $timezone
+	 * @throws \Exception
+	 * @return DateTime
+	 */
+	public static function of(string $datetime = 'now', ?\DateTimeZone $timezone = null): DateTime
+	{
+		return new DateTime($datetime, $timezone);
 	}
 	
 	/**
