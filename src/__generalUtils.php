@@ -18,3 +18,20 @@ if (!function_exists('debug'))
 	}
 }
 
+
+if (!function_exists('checkArray'))
+{
+	function checkArray($array): bool
+	{
+		if (is_array($array))
+		{
+			if (count($array) > 0)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+}
+
