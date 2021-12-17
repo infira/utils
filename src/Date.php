@@ -60,7 +60,18 @@ class Date
 	 */
 	public static function of(string $datetime = 'now', ?\DateTimeZone $timezone = null): DateTime
 	{
-		return new DateTime($datetime, $timezone);
+		$ts = null;
+		if (is_numeric($datetime))
+		{
+			$ts = intval($datetime);
+			$datetime = 'now';
+		}
+		$tm = new DateTime($datetime, $timezone);
+		if ($ts !== null)
+		{
+			$tm->setTimestamp($ts);
+		}
+		return $tm;
 	}
 	
 	/**
