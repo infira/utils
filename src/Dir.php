@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Infira\Utils;
+namespace Infira\File;
 
 class Dir
 {
