@@ -101,43 +101,33 @@ class Gen
 	 * @throws \ReflectionException
 	 * @return string
 	 */
-	public static function cacheString($key): string
+	public static function cacheString(...$hashable): string
 	{
-		if (Is::closure($key))
-		{
-			return ClosureHash::from($key);
-		}
-		elseif (is_object($key))
-		{
-			return serialize($key);
-		}
-		elseif (is_array($key))
-		{
-			$output = '';
-			array_walk_recursive($key, function ($item, $key) use (&$output)
-			{
-				if (is_resource($item))
-				{
-					$output .= $key;
+		$output = [];
+		foreach ($hashable as $value) {
+			if ($value instanceof \Closure) {
+				$value = (new \ReflectionFunction($value))->__toString();
+				$value = preg_replace('/\@\@.+/', '', $value);//remove file location
+				$value = self::hashable($value);
+			}
+			elseif (is_object($value)) {
+				$value = serialize($value);
+			}
+			elseif (is_array($value)) {
+				$arr   = $value;
+				$value = [];
+				foreach ($arr as $key => $v) {
+					$value[] = self::hashable($key) . '-' . self::hashable($v);
 				}
-				elseif ($item instanceof \Closure)
-				{
-					$output .= self::cacheString($item);
-				}
-				else
-				{
-					$output .= $key . self::cacheString($item);
-				}
-			});
-			
-			return $output;
-		}
-		elseif (!is_string($key))
-		{
-			return var_export($key, true);
+				$value = join('-', $value);
+			}
+			elseif (!is_string($value)) {
+				$value = var_export($value, true);
+			}
+			$output[] = preg_replace('![\s]+!u', '', $value);
 		}
 		
-		return $key;
+		return join('-', $output);
 	}
 	
 	/**
