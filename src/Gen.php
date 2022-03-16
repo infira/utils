@@ -108,7 +108,7 @@ class Gen
 			if ($value instanceof \Closure) {
 				$value = (new \ReflectionFunction($value))->__toString();
 				$value = preg_replace('/\@\@.+/', '', $value);//remove file location
-				$value = self::hashable($value);
+				$value = self::cacheString($value);
 			}
 			elseif (is_object($value)) {
 				$value = serialize($value);
@@ -117,7 +117,7 @@ class Gen
 				$arr   = $value;
 				$value = [];
 				foreach ($arr as $key => $v) {
-					$value[] = self::hashable($key) . '-' . self::hashable($v);
+					$value[] = self::cacheString($key) . '-' . self::cacheString($v);
 				}
 				$value = join('-', $value);
 			}
