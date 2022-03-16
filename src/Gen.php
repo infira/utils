@@ -106,9 +106,10 @@ class Gen
 		$output = [];
 		foreach ($hashable as $value) {
 			if ($value instanceof \Closure) {
-				$value = (new \ReflectionFunction($value))->__toString();
+				$ref   = new \ReflectionFunction($value);
+				$value = $ref->__toString();
 				$value = preg_replace('/\@\@.+/', '', $value);//remove file location
-				$value = self::cacheString($value);
+				$value = self::cacheString($value, $ref->getStaticVariables());
 			}
 			elseif (is_object($value)) {
 				$value = serialize($value);
